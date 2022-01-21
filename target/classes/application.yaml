@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://maksim-VM-SQL:5432/book_library_db
+    username: postgres
+    password: 123
+    tomcat:
+      max-wait: 20000
+      max-active: 50
+      max-idle: 20
+      min-idle: 15
+      validation-query: SELECT 1
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
