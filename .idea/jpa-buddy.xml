@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="JpaBuddyIdeaProjectConfig">
+    <option name="liquibaseDirectory" value="db/changelog/2022/01" />
     <option name="sourceModelValue" value="Default" />
     <option name="targetDbValue" value="4fad3417-72f7-4ace-aefe-8c437ad76880" />
   </component>

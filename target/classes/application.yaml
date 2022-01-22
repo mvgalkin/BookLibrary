@@ -1,4 +1,6 @@
 spring:
+  liquibase:
+    enabled: true
   datasource:
     url: jdbc:postgresql://maksim-VM-SQL:5432/book_library_db
     username: postgres
@@ -14,4 +16,4 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
