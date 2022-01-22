@@ -7,7 +7,6 @@ import java.util.Set;
 
 @Getter
 @Setter
-@EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -17,18 +16,9 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
-
-    @Lob
-    private byte[] cover;
+    @Embedded
+    private BookInfo info;
 
     @Lob
     private byte[] content;
-
-    @ManyToMany(targetEntity = Author.class)
-    private Set<Author> authors;
-
-    @ManyToMany(targetEntity = Genre.class)
-    private Set<Genre> genres;
-
 }
