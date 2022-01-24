@@ -20,7 +20,7 @@ public class LibraryApiController {
     @GetMapping("/best_books")
     public @ResponseBody
     Iterable<BookInfo> getBooksByPages(
-            @RequestParam(value = "count", required = true, defaultValue = "10") Integer limit
+            @RequestParam(value = "count", defaultValue = "10") Integer limit
     ){
         //контроль входных параметров (требований нет, поэтому проверка чисто на адекватность)
         if (limit<1) {
@@ -36,8 +36,8 @@ public class LibraryApiController {
     @GetMapping("/books")
     public @ResponseBody
     Page<BookInfo> getBooksByPages(
-            @RequestParam(value = "pagenumber", required = true, defaultValue = "0") Integer pageNumber,
-            @RequestParam(value = "pagesize", required = true, defaultValue = "20") Integer pageSize
+            @RequestParam(value = "pagenumber", defaultValue = "0") Integer pageNumber,
+            @RequestParam(value = "pagesize", defaultValue = "20") Integer pageSize
     ){
         //контроль входных параметров (требований нет, поэтому проверка чисто на адекватность)
         if (pageNumber<0) pageNumber = 0;
@@ -50,7 +50,7 @@ public class LibraryApiController {
     @GetMapping("/books/{id}/info")
     public @ResponseBody
     ResponseEntity<BookInfo> getBookInfo(
-            @PathVariable(value = "id", required = true) Long id
+            @PathVariable(value = "id") Long id
     ){
         var book = libraryService.getBookInfo(id);
         if (book.isEmpty()) {
@@ -63,7 +63,7 @@ public class LibraryApiController {
     @GetMapping("/books/{id}/content")
     public @ResponseBody
     ResponseEntity<byte[]> getBookContent(
-            @PathVariable(value = "id", required = true) Long id
+            @PathVariable(value = "id") Long id
     ){
         var bookContent = libraryService.getBookContent(id);
         if (bookContent == null) {
@@ -80,9 +80,9 @@ public class LibraryApiController {
     @GetMapping("/books/find/name/{name}")
     public @ResponseBody
     ResponseEntity<Page<BookInfo>> findBooksByName(
-            @PathVariable(value = "name", required = true) String name,
-            @RequestParam(value = "pagenumber", required = true, defaultValue = "0") Integer pageNumber,
-            @RequestParam(value = "pagesize", required = true, defaultValue = "20") Integer pageSize
+            @PathVariable(value = "name") String name,
+            @RequestParam(value = "pagenumber", defaultValue = "0") Integer pageNumber,
+            @RequestParam(value = "pagesize", defaultValue = "20") Integer pageSize
     ){
         //контроль входных параметров (требований нет, поэтому проверка чисто на адекватность)
         if (name == null || name.isBlank()) {
@@ -98,9 +98,9 @@ public class LibraryApiController {
     @GetMapping("/books/find/author/{name}")
     public @ResponseBody
     ResponseEntity<Page<BookInfo>> findBooksByAuthorName(
-            @PathVariable(value = "name", required = true) String name,
-            @RequestParam(value = "pagenumber", required = true, defaultValue = "0") Integer pageNumber,
-            @RequestParam(value = "pagesize", required = true, defaultValue = "20") Integer pageSize
+            @PathVariable(value = "name") String name,
+            @RequestParam(value = "pagenumber", defaultValue = "0") Integer pageNumber,
+            @RequestParam(value = "pagesize", defaultValue = "20") Integer pageSize
     ){
         //контроль входных параметров (требований нет, поэтому проверка чисто на адекватность)
         if (name == null || name.isBlank()) {
@@ -116,9 +116,9 @@ public class LibraryApiController {
     @GetMapping("/books/find/genre/{genre}")
     public @ResponseBody
     ResponseEntity<Page<BookInfo>> findBooksByGenre(
-            @PathVariable(value = "genre", required = true) String genre,
-            @RequestParam(value = "pagenumber", required = true, defaultValue = "0") Integer pageNumber,
-            @RequestParam(value = "pagesize", required = true, defaultValue = "20") Integer pageSize
+            @PathVariable(value = "genre") String genre,
+            @RequestParam(value = "pagenumber", defaultValue = "0") Integer pageNumber,
+            @RequestParam(value = "pagesize", defaultValue = "20") Integer pageSize
     ){
         //контроль входных параметров (требований нет, поэтому проверка чисто на адекватность)
         if (genre == null || genre.isBlank()) {
