@@ -34085,10 +34085,14 @@ var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = (function (r
 /*!****************************!*\
   !*** ./src/main/js/app.js ***!
   \****************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _auth_auth__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./auth/auth */ "./src/main/js/auth/auth.js");
+/* harmony import */ var _books_best_books_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./books/best_books.js */ "./src/main/js/books/best_books.js");
+/* harmony import */ var _books_editable_books_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./books/editable_books.js */ "./src/main/js/books/editable_books.js");
 
 
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
@@ -34113,11 +34117,17 @@ function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Re
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
+
+
+
+
 var React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 var ReactDOM = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
 
 var client = __webpack_require__(/*! ./client */ "./src/main/js/client.js");
+
+var root = '/api';
 
 var App = /*#__PURE__*/function (_React$Component) {
   _inherits(App, _React$Component);
@@ -34131,7 +34141,9 @@ var App = /*#__PURE__*/function (_React$Component) {
 
     _this = _super.call(this, props);
     _this.state = {
-      books: []
+      isAuthorized: true,
+      best_books: [],
+      paged_books: {}
     };
     return _this;
   }
@@ -34141,39 +34153,213 @@ var App = /*#__PURE__*/function (_React$Component) {
     value: function componentDidMount() {
       var _this2 = this;
 
-      client({
-        method: 'GET',
-        path: '/api/best_books'
-      }).done(function (response) {
-        _this2.setState({
-          books: response.entity
+      if (!this.state.isAuthorized) {
+        client({
+          method: 'GET',
+          path: root + '/best_books'
+        }).done(function (response) {
+          var newState = _this2.state;
+          newState.best_books = response.entity;
+
+          _this2.setState(newState);
         });
-      });
+      } else {
+        client({
+          method: 'GET',
+          path: root + '/books'
+        }).done(function (response) {
+          var newState = _this2.state;
+          newState.paged_books = response.entity;
+
+          _this2.setState(newState);
+        });
+      }
     }
   }, {
     key: "render",
     value: function render() {
-      return /*#__PURE__*/React.createElement(BookList, {
-        books: this.state.books
-      });
+      if (!this.state.isAuthorized) {
+        return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(_auth_auth__WEBPACK_IMPORTED_MODULE_0__["RequestAuthForm"], null), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement(_books_best_books_js__WEBPACK_IMPORTED_MODULE_1__["BestBooks"], {
+          books: this.state.best_books
+        }));
+      } else {
+        return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(_auth_auth__WEBPACK_IMPORTED_MODULE_0__["SucceededAuthForm"], null), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement(_books_editable_books_js__WEBPACK_IMPORTED_MODULE_2__["EditableBooksList"], {
+          paged_books: this.state.paged_books
+        }));
+      }
     }
   }]);
 
   return App;
 }(React.Component);
 
-var BookList = /*#__PURE__*/function (_React$Component2) {
-  _inherits(BookList, _React$Component2);
+ReactDOM.render( /*#__PURE__*/React.createElement(App, null), document.getElementById('react'));
 
-  var _super2 = _createSuper(BookList);
+/***/ }),
 
-  function BookList() {
-    _classCallCheck(this, BookList);
+/***/ "./src/main/js/auth/auth.js":
+/*!**********************************!*\
+  !*** ./src/main/js/auth/auth.js ***!
+  \**********************************/
+/*! exports provided: SucceededAuthForm, RequestAuthForm */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SucceededAuthForm", function() { return SucceededAuthForm; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "RequestAuthForm", function() { return RequestAuthForm; });
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+var React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
+var SucceededAuthForm = /*#__PURE__*/function (_React$Component) {
+  _inherits(SucceededAuthForm, _React$Component);
+
+  var _super = _createSuper(SucceededAuthForm);
+
+  function SucceededAuthForm() {
+    _classCallCheck(this, SucceededAuthForm);
+
+    return _super.apply(this, arguments);
+  }
+
+  _createClass(SucceededAuthForm, [{
+    key: "render",
+    value: function render() {
+      return /*#__PURE__*/React.createElement("div", {
+        id: "authform"
+      }, /*#__PURE__*/React.createElement("h1", null, "\u0414\u043E\u0431\u0440\u043E \u043F\u043E\u0436\u0430\u043B\u043E\u0432\u0430\u0442\u044C, ", this.props.name, "!"));
+    }
+  }]);
+
+  return SucceededAuthForm;
+}(React.Component);
+var RequestAuthForm = /*#__PURE__*/function (_React$Component2) {
+  _inherits(RequestAuthForm, _React$Component2);
+
+  var _super2 = _createSuper(RequestAuthForm);
+
+  function RequestAuthForm() {
+    _classCallCheck(this, RequestAuthForm);
 
     return _super2.apply(this, arguments);
   }
 
-  _createClass(BookList, [{
+  _createClass(RequestAuthForm, [{
+    key: "render",
+    value: function render() {
+      return /*#__PURE__*/React.createElement("div", {
+        id: "authform"
+      }, /*#__PURE__*/React.createElement("form", null, /*#__PURE__*/React.createElement("h1", null, "\u0414\u043E\u0431\u0440\u043E \u043F\u043E\u0436\u0430\u043B\u043E\u0432\u0430\u0442\u044C, \u043F\u043E\u0436\u0430\u043B\u0443\u0439\u0441\u0442\u0430 \u0430\u0432\u0442\u043E\u0440\u0438\u0437\u0443\u0439\u0442\u0435\u0441\u044C"), /*#__PURE__*/React.createElement("table", null, /*#__PURE__*/React.createElement("tbody", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "\u0418\u043C\u044F \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F"), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("input", {
+        type: "text",
+        id: "username",
+        name: "username"
+      }))), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "\u041F\u0430\u0440\u043E\u043B\u044C:"), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("input", {
+        type: "password",
+        id: "password",
+        name: "password"
+      }))), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", {
+        colSpan: "2"
+      }, /*#__PURE__*/React.createElement("input", {
+        type: "submit"
+      })))))));
+    }
+  }]);
+
+  return RequestAuthForm;
+}(React.Component);
+
+/***/ }),
+
+/***/ "./src/main/js/books/best_books.js":
+/*!*****************************************!*\
+  !*** ./src/main/js/books/best_books.js ***!
+  \*****************************************/
+/*! exports provided: BestBooks */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "BestBooks", function() { return BestBooks; });
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+var React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
+var BestBooks = /*#__PURE__*/function (_React$Component) {
+  _inherits(BestBooks, _React$Component);
+
+  var _super = _createSuper(BestBooks);
+
+  function BestBooks() {
+    _classCallCheck(this, BestBooks);
+
+    return _super.apply(this, arguments);
+  }
+
+  _createClass(BestBooks, [{
+    key: "render",
+    value: function render() {
+      return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h2", null, "\u041B\u0443\u0447\u0448\u0438\u0435 \u043A\u043D\u0438\u0433\u0438 \u043F\u0440\u0435\u0434\u0441\u0442\u0430\u0432\u043B\u0435\u043D\u043D\u044B\u0435 \u0432 \u043D\u0430\u0448\u0435\u0439 \u0431\u0438\u043B\u0438\u043E\u0442\u0435\u043A\u0435:"), /*#__PURE__*/React.createElement(BookInfoList, {
+        books: this.props.books
+      }));
+    }
+  }]);
+
+  return BestBooks;
+}(React.Component);
+
+var BookInfoList = /*#__PURE__*/function (_React$Component2) {
+  _inherits(BookInfoList, _React$Component2);
+
+  var _super2 = _createSuper(BookInfoList);
+
+  function BookInfoList() {
+    _classCallCheck(this, BookInfoList);
+
+    return _super2.apply(this, arguments);
+  }
+
+  _createClass(BookInfoList, [{
     key: "render",
     value: function render() {
       var books = this.props.books.map(function (book) {
@@ -34182,25 +34368,27 @@ var BookList = /*#__PURE__*/function (_React$Component2) {
           books: book
         });
       });
-      return /*#__PURE__*/React.createElement("table", null, /*#__PURE__*/React.createElement("tbody", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "\u041D\u0430\u0437\u0432\u0430\u043D\u0438\u0435"), /*#__PURE__*/React.createElement("th", null, "\u041E\u0431\u043B\u043E\u0436\u043A\u0430"), /*#__PURE__*/React.createElement("th", null, "\u0410\u0432\u0442\u043E\u0440\u044B"), /*#__PURE__*/React.createElement("th", null, "\u0416\u0430\u043D\u0440")), books));
+      return /*#__PURE__*/React.createElement("table", {
+        className: "books"
+      }, /*#__PURE__*/React.createElement("tbody", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "\u041D\u0430\u0437\u0432\u0430\u043D\u0438\u0435"), /*#__PURE__*/React.createElement("th", null, "\u041E\u0431\u043B\u043E\u0436\u043A\u0430"), /*#__PURE__*/React.createElement("th", null, "\u0410\u0432\u0442\u043E\u0440\u044B"), /*#__PURE__*/React.createElement("th", null, "\u0416\u0430\u043D\u0440")), books));
     }
   }]);
 
-  return BookList;
+  return BookInfoList;
 }(React.Component);
 
-var Book = /*#__PURE__*/function (_React$Component3) {
-  _inherits(Book, _React$Component3);
+var BookInfo = /*#__PURE__*/function (_React$Component3) {
+  _inherits(BookInfo, _React$Component3);
 
-  var _super3 = _createSuper(Book);
+  var _super3 = _createSuper(BookInfo);
 
-  function Book() {
-    _classCallCheck(this, Book);
+  function BookInfo() {
+    _classCallCheck(this, BookInfo);
 
     return _super3.apply(this, arguments);
   }
 
-  _createClass(Book, [{
+  _createClass(BookInfo, [{
     key: "render",
     value: function render() {
       return /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, this.props.books.name), /*#__PURE__*/React.createElement("td", null, this.props.books.cover), /*#__PURE__*/React.createElement("td", null, this.props.books.authors.map(function (a) {
@@ -34211,10 +34399,253 @@ var Book = /*#__PURE__*/function (_React$Component3) {
     }
   }]);
 
-  return Book;
+  return BookInfo;
 }(React.Component);
 
-ReactDOM.render( /*#__PURE__*/React.createElement(App, null), document.getElementById('react'));
+/***/ }),
+
+/***/ "./src/main/js/books/editable_books.js":
+/*!*********************************************!*\
+  !*** ./src/main/js/books/editable_books.js ***!
+  \*********************************************/
+/*! exports provided: EditableBooksList */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EditableBooksList", function() { return EditableBooksList; });
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+var React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
+var EditableBooksList = /*#__PURE__*/function (_React$Component) {
+  _inherits(EditableBooksList, _React$Component);
+
+  var _super = _createSuper(EditableBooksList);
+
+  function EditableBooksList() {
+    _classCallCheck(this, EditableBooksList);
+
+    return _super.apply(this, arguments);
+  }
+
+  _createClass(EditableBooksList, [{
+    key: "render",
+    value: function render() {
+      var _this$props$paged_boo, _this$props$paged_boo2, _this$props$paged_boo3;
+
+      var pageNumber = (_this$props$paged_boo = this.props.paged_books) === null || _this$props$paged_boo === void 0 ? void 0 : (_this$props$paged_boo2 = _this$props$paged_boo.pageable) === null || _this$props$paged_boo2 === void 0 ? void 0 : _this$props$paged_boo2.pageNumber;
+
+      if (pageNumber == null) {
+        pageNumber = 0;
+      }
+
+      var totalPages = (_this$props$paged_boo3 = this.props.paged_books) === null || _this$props$paged_boo3 === void 0 ? void 0 : _this$props$paged_boo3.totalPages;
+
+      if (totalPages == null) {
+        totalPages = 1;
+      }
+
+      var content = this.props.paged_books.content;
+      console.warn(content);
+      return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h2", null, "\u041D\u0430\u0448\u0430 \u0431\u0438\u0431\u043B\u0438\u043E\u0442\u0435\u043A\u0430:"), /*#__PURE__*/React.createElement("form", null, /*#__PURE__*/React.createElement("div", {
+        align: "center"
+      }, /*#__PURE__*/React.createElement("div", {
+        align: "right"
+      }, /*#__PURE__*/React.createElement(PagingInfo, {
+        pageNumber: pageNumber,
+        totalPages: totalPages
+      })), /*#__PURE__*/React.createElement("div", {
+        align: "left"
+      }, /*#__PURE__*/React.createElement("input", {
+        type: "button",
+        value: "\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C"
+      })), /*#__PURE__*/React.createElement(BookInfoList, {
+        books: content
+      }), /*#__PURE__*/React.createElement(ManagePaging, {
+        pageNumber: pageNumber,
+        totalPages: totalPages
+      }))));
+    }
+  }]);
+
+  return EditableBooksList;
+}(React.Component);
+
+var PagingInfo = /*#__PURE__*/function (_React$Component2) {
+  _inherits(PagingInfo, _React$Component2);
+
+  var _super2 = _createSuper(PagingInfo);
+
+  function PagingInfo() {
+    _classCallCheck(this, PagingInfo);
+
+    return _super2.apply(this, arguments);
+  }
+
+  _createClass(PagingInfo, [{
+    key: "render",
+    value: function render() {
+      return /*#__PURE__*/React.createElement("b", null, "\u0421\u0442\u0440\u0430\u043D\u0438\u0446\u0430: ", this.props.pageNumber + 1, " \u0438\u0437 ", this.props.totalPages);
+    }
+  }]);
+
+  return PagingInfo;
+}(React.Component);
+
+var ManagePaging = /*#__PURE__*/function (_React$Component3) {
+  _inherits(ManagePaging, _React$Component3);
+
+  var _super3 = _createSuper(ManagePaging);
+
+  function ManagePaging() {
+    _classCallCheck(this, ManagePaging);
+
+    return _super3.apply(this, arguments);
+  }
+
+  _createClass(ManagePaging, [{
+    key: "render",
+    value: function render() {
+      var pages;
+
+      for (var i = 0; i < this.props.totalPages; i++) {
+        var isCurrent = i === this.props.pageNumber;
+        pages = /*#__PURE__*/React.createElement(Page, {
+          is_current_page: isCurrent,
+          number: i
+        });
+      }
+
+      return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+        align: "center"
+      }, "\u0421\u0442\u0440\u0430\u043D\u0438\u0446\u044B:"), pages);
+    }
+  }]);
+
+  return ManagePaging;
+}(React.Component);
+
+var Page = /*#__PURE__*/function (_React$Component4) {
+  _inherits(Page, _React$Component4);
+
+  var _super4 = _createSuper(Page);
+
+  function Page() {
+    _classCallCheck(this, Page);
+
+    return _super4.apply(this, arguments);
+  }
+
+  _createClass(Page, [{
+    key: "render",
+    value: function render() {
+      if (this.props.is_current_page) {
+        return /*#__PURE__*/React.createElement("b", null, this.props.number);
+      } else {
+        return /*#__PURE__*/React.createElement("a", {
+          href: ""
+        }, this.props.number);
+      }
+    }
+  }]);
+
+  return Page;
+}(React.Component);
+
+var BookInfoList = /*#__PURE__*/function (_React$Component5) {
+  _inherits(BookInfoList, _React$Component5);
+
+  var _super5 = _createSuper(BookInfoList);
+
+  function BookInfoList() {
+    _classCallCheck(this, BookInfoList);
+
+    return _super5.apply(this, arguments);
+  }
+
+  _createClass(BookInfoList, [{
+    key: "render",
+    value: function render() {
+      if (this.props.books === undefined) {
+        return /*#__PURE__*/React.createElement("table", {
+          className: "books"
+        }, /*#__PURE__*/React.createElement("tbody", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "\u041D\u0430\u0437\u0432\u0430\u043D\u0438\u0435"), /*#__PURE__*/React.createElement("th", null, "\u041E\u0431\u043B\u043E\u0436\u043A\u0430"), /*#__PURE__*/React.createElement("th", null, "\u0410\u0432\u0442\u043E\u0440\u044B"), /*#__PURE__*/React.createElement("th", null, "\u0416\u0430\u043D\u0440"), /*#__PURE__*/React.createElement("th", null, "\u0414\u0435\u0439\u0441\u0442\u0432\u0438\u044F"))));
+      } else {
+        var _this$props$books;
+
+        var books = (_this$props$books = this.props.books) === null || _this$props$books === void 0 ? void 0 : _this$props$books.map(function (book) {
+          return /*#__PURE__*/React.createElement(BookInfo, {
+            key: book.name,
+            books: book
+          });
+        });
+        return /*#__PURE__*/React.createElement("table", {
+          className: "books"
+        }, /*#__PURE__*/React.createElement("tbody", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "\u041D\u0430\u0437\u0432\u0430\u043D\u0438\u0435"), /*#__PURE__*/React.createElement("th", null, "\u041E\u0431\u043B\u043E\u0436\u043A\u0430"), /*#__PURE__*/React.createElement("th", null, "\u0410\u0432\u0442\u043E\u0440\u044B"), /*#__PURE__*/React.createElement("th", null, "\u0416\u0430\u043D\u0440"), /*#__PURE__*/React.createElement("th", null, "\u0414\u0435\u0439\u0441\u0442\u0432\u0438\u044F")), books));
+      }
+    }
+  }]);
+
+  return BookInfoList;
+}(React.Component);
+
+var BookInfo = /*#__PURE__*/function (_React$Component6) {
+  _inherits(BookInfo, _React$Component6);
+
+  var _super6 = _createSuper(BookInfo);
+
+  function BookInfo() {
+    _classCallCheck(this, BookInfo);
+
+    return _super6.apply(this, arguments);
+  }
+
+  _createClass(BookInfo, [{
+    key: "render",
+    value: function render() {
+      return /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, this.props.books.name), /*#__PURE__*/React.createElement("td", null, this.props.books.cover), /*#__PURE__*/React.createElement("td", null, this.props.books.authors.map(function (a) {
+        return a.name;
+      }).join(', ')), /*#__PURE__*/React.createElement("td", null, this.props.books.genres.map(function (g) {
+        return g.name;
+      }).join(', ')), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("input", {
+        type: "button",
+        value: "\u041F\u0440\u043E\u0441\u043C\u043E\u0442\u0440"
+      }), "\xA0", /*#__PURE__*/React.createElement("input", {
+        type: "button",
+        value: "\u0417\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044C"
+      }), "\xA0", /*#__PURE__*/React.createElement("input", {
+        type: "button",
+        value: "\u0420\u0435\u0434\u0430\u043A\u0442\u0438\u0440\u043E\u0432\u0430\u0442\u044C"
+      }), "\xA0", /*#__PURE__*/React.createElement("input", {
+        type: "button",
+        value: "\u0423\u0434\u0430\u043B\u0438\u0442\u044C"
+      })));
+    }
+  }]);
+
+  return BookInfo;
+}(React.Component);
 
 /***/ }),
 

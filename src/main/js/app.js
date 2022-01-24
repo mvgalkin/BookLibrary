@@ -1,64 +1,60 @@
 'use strict';
 
+import {SucceededAuthForm, RequestAuthForm} from './auth/auth';
+import {BestBooks} from './books/best_books.js';
+import {EditableBooksList} from './books/editable_books.js';
+
 const React = require('react');
 const ReactDOM = require('react-dom');
 const client = require('./client');
 
+const root='/api'
 
 class App extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {books: []};
+        this.state = {isAuthorized: true, best_books: [], paged_books: {}};
     }
 
     componentDidMount() {
-        client({method: 'GET', path: '/api/best_books'}).done(response => {
-            this.setState({books: response.entity});
-        });
+        if (!this.state.isAuthorized) {
+            client({method: 'GET', path: root+'/best_books'}).done(response => {
+                var newState = this.state;
+                newState.best_books = response.entity
+                this.setState(newState);
+            });
+        } else {
+            client({method: 'GET', path: root+'/books'}).done(response => {
+                var newState = this.state;
+                newState.paged_books = response.entity
+                this.setState(newState);
+            });
+        }
     }
 
     render() {
-        return (
-            <BookList books={this.state.books}/>
-        )
+        if (!this.state.isAuthorized) {
+            return (
+                <div>
+                    <RequestAuthForm/>
+                    <br/><br/>
+                    <BestBooks books={this.state.best_books}/>
+                </div>
+            )
+        } else {
+            return (
+                <div>
+                    <SucceededAuthForm/>
+                    <br/><br/>
+                    <EditableBooksList paged_books={this.state.paged_books}/>
+                </div>
+            )
+        }
     }
 }
 
 
-class BookList extends React.Component{
-    render() {
-        const books = this.props.books.map(book =>
-            <Book key={book.name} books={book}/>
-        );
-        return (
-            <table>
-                <tbody>
-                <tr>
-                    <th>Название</th>
-                    <th>Обложка</th>
-                    <th>Авторы</th>
-                    <th>Жанр</th>
-                </tr>
-                {books}
-                </tbody>
-            </table>
-        )
-    }
-}
-
-class Book extends React.Component{
-    render() {
-        return (
-            <tr>
-                <td>{this.props.books.name}</td>
-                <td>{this.props.books.cover}</td>
-                <td>{this.props.books.authors.map(a => a.name).join(', ')}</td>
-                <td>{this.props.books.genres.map(g => g.name).join(', ')}</td>
-            </tr>
-        )
-    }
-}
 
 ReactDOM.render(
     <App />,

@@ -1,9 +1,19 @@
-table {
+table.books {
     border-collapse: collapse;
 }
 
-td, th {
+.books td, th {
     border: 1px solid #999;
     padding: 0.5rem;
     text-align: left;
+}
+
+
+#authform {
+    border: 1px solid #999;
+    background-color: #eeeeee;
+}
+
+#authform table tr th td {
+    border: none;
 }
