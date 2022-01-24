@@ -19,9 +19,17 @@ public class BookInfo {
     @Lob
     private byte[] cover;
 
-    @ManyToMany(mappedBy = "books")
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "books_authors",
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "author_id"))
     private Set<Author> authors;
 
-    @ManyToMany(mappedBy = "books")
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "books_genres",
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "genre_id"))
     private Set<Genre> genres;
 }

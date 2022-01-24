@@ -1,15 +1,12 @@
 package org.mvgalkin.services;
 
 import org.mvgalkin.dao.BooksDaoRepository;
-import org.mvgalkin.dao.BooksInfoDaoRepository;
 import org.mvgalkin.models.Book;
 import org.mvgalkin.models.BookInfo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,22 +18,20 @@ public class LibraryServiceImpl implements LibraryService {
 
     private final BooksDaoRepository booksRepository;
 
-    private final BooksInfoDaoRepository booksInfoRepository;
-
-    public LibraryServiceImpl(BooksInfoDaoRepository booksInfoRepository, BooksDaoRepository booksRepository){
+    public LibraryServiceImpl(BooksDaoRepository booksRepository) {
         this.booksRepository = booksRepository;
-        this.booksInfoRepository = booksInfoRepository;
     }
 
     @Override
-    public Iterable<BookInfo> getBestBooks(Integer limit) {
-        if (booksInfoRepository.count()<=limit) {
-            return booksInfoRepository.findAll();
+    public List<BookInfo> getBestBooks(Integer limit) {
+        Iterable<Book> allBooksSource = booksRepository.findAll();
+        List<BookInfo> bestBooks = new ArrayList<>();
+        if (booksRepository.count()<=limit) {
+            allBooksSource.forEach(b -> bestBooks.add(b.getInfo()));
+            return bestBooks;
         } else {
-            Iterable<BookInfo> allBooksSource = booksInfoRepository.findAll();
-            List<BookInfo> allBooks = new ArrayList<>();
-            allBooksSource.forEach(allBooks::add);
-            return getRandomElements(allBooks, limit);
+            allBooksSource.forEach(b -> bestBooks.add(b.getInfo()));
+            return getRandomElements(bestBooks, limit);
         }
     }
 
@@ -59,44 +54,51 @@ public class LibraryServiceImpl implements LibraryService {
 
     @Override
     public Page<BookInfo> getBooksByPage(Integer pageNumber, Integer pageSize) {
-        return null;
-        /*
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        return booksInfoRepository.findAll(pageable);
+        return booksRepository.findAll(pageable).map(Book::getInfo);
 
-         */
     }
 
     @Override
     public Optional<BookInfo> getBookInfo(long id) {
-        return booksInfoRepository.findById(id);
+        return booksRepository.findById(id).map(Book::getInfo);
     }
 
     @Override
     public Optional<byte[]> getBookContent(long id) {
         Optional<Book> book = booksRepository.findById(id);
         if (book.isEmpty()) {
-            return Optional.empty();
+            return null;
+        } else {
+           var content = book.get().getContent();
+           if (content==null) {
+               return Optional.empty();
+           } else {
+               return Optional.of(book.get().getContent());
+           }
         }
-        return Optional.of(book.get().getContent());
     }
 
     @Override
-    public Page<BookInfo> FindBooksByName(String partOfName, Integer pageNumber, Integer pageSize) {
+    public Page<BookInfo> findBooksByName(String partOfName, Integer pageNumber, Integer pageSize) {
+        partOfName = "%"+partOfName+"%";
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        return booksInfoRepository.findByNameIsLike(partOfName, pageable);
+        Page<Book> page = booksRepository.findByInfo_NameLikeIgnoreCase(partOfName, pageable);
+        return page.map(Book::getInfo);
     }
 
     @Override
-    public Page<BookInfo> FindBooksByAuthorName(String name, Integer pageNumber, Integer pageSize) {
+    public Page<BookInfo> findBooksByAuthorName(String name, Integer pageNumber, Integer pageSize) {
+        name = "%"+name+"%";
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        return booksInfoRepository.findByAuthors_NameLike(name, pageable);
+        return booksRepository.findByInfo_Authors_NameLikeIgnoreCase(name, pageable).map(Book::getInfo);
     }
 
     @Override
-    public Page<BookInfo> FindBooksByGenre(String genre, Integer pageNumber, Integer pageSize) {
+    public Page<BookInfo> findBooksByGenre(String genre, Integer pageNumber, Integer pageSize) {
+        genre = "%"+genre+"%";
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        return booksInfoRepository.findByGenres_NameLike(genre, pageable);
+        return booksRepository.findByInfo_Genres_NameLikeIgnoreCase(genre, pageable).map(Book::getInfo);
     }
 
     @Override

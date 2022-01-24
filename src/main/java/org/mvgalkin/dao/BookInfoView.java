@@ -12,4 +12,4 @@ public interface BookInfoView {
     Set<Author> getAuthors();
     Set<Genre> getGenres();
 }
- */
+*/

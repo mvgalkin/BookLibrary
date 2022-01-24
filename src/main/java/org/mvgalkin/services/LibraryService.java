@@ -13,9 +13,9 @@ public interface LibraryService {
 
     Optional<byte[]> getBookContent(long id);
 
-    Page<BookInfo> FindBooksByName(String partOfName, Integer pageNumber, Integer pageSize);
-    Page<BookInfo> FindBooksByAuthorName(String name, Integer pageNumber, Integer pageSize);
-    Page<BookInfo> FindBooksByGenre(String genre, Integer pageNumber, Integer pageSize);
+    Page<BookInfo> findBooksByName(String partOfName, Integer pageNumber, Integer pageSize);
+    Page<BookInfo> findBooksByAuthorName(String name, Integer pageNumber, Integer pageSize);
+    Page<BookInfo> findBooksByGenre(String genre, Integer pageNumber, Integer pageSize);
 
     Book save(Book book);
     void update(long id, Book book);

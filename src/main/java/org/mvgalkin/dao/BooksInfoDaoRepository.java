@@ -1,3 +1,4 @@
+/*
 package org.mvgalkin.dao;
 
 import org.mvgalkin.models.BookInfo;
@@ -10,3 +11,4 @@ public interface BooksInfoDaoRepository extends PagingAndSortingRepository<BookI
     Page<BookInfo> findByAuthors_NameLike(String authors_name, Pageable pageable);
     Page<BookInfo> findByGenres_NameLike(String genres_name, Pageable pageable);
 }
+*/
