@@ -41820,33 +41820,31 @@ var App = /*#__PURE__*/function (_React$Component) {
     key: "onView",
     value: function onView(e, id) {
       e.preventDefault();
-      alert(id);
+      window.location = '.' + root + '/books/' + id + '/content';
     }
   }, {
     key: "onDownload",
     value: function onDownload(e, id) {
       e.preventDefault();
-      client({
-        method: 'GET',
-        path: root + '/books/' + id + '/content',
-        headers: {
-          'Content-Type': 'application/octet-stream',
-          'Content-Disposition': 'attachment'
-        }
-      }).done(function (response) {
-        console.warn("download completed");
-      });
+      window.location = '.' + root + '/books/' + id + '/content';
     }
   }, {
     key: "onDelete",
     value: function onDelete(e, id) {
+      var _this5 = this;
+
       e.preventDefault();
-      alert(id);
+      client({
+        method: 'DELETE',
+        path: root + '/books/' + id
+      }).done(function (response) {
+        _this5.loadingAllBooksForPage(_this5.currentPageNumber);
+      });
     }
   }, {
     key: "onEdit",
     value: function onEdit(book) {
-      var _this5 = this;
+      var _this6 = this;
 
       client({
         method: 'PUT',
@@ -41856,7 +41854,7 @@ var App = /*#__PURE__*/function (_React$Component) {
           'Content-Type': 'application/json'
         }
       }).done(function (response) {
-        _this5.loadingAllBooksForPage(_this5.currentPageNumber);
+        _this6.loadingAllBooksForPage(_this6.currentPageNumber);
       });
     }
   }, {

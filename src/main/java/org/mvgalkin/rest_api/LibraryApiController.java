@@ -74,7 +74,8 @@ public class LibraryApiController {
             if (bookContent.isEmpty()) {
                 return ResponseEntity.noContent().build();
             } else {
-                return ResponseEntity.ok().body(bookContent.get());
+                var content = bookContent.get();
+                return ResponseEntity.ok().contentLength(content.length).body(content);
             }
         }
     }
@@ -148,7 +149,6 @@ public class LibraryApiController {
             }
         });
 
-        LoggerFactory.getLogger("LibraryApiController").error("Book=" + book.toString());
         Book savedBook = libraryService.save(book);
         return ResponseEntity.ok().body(savedBook);
     }

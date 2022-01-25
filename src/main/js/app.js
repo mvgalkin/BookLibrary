@@ -71,23 +71,22 @@ class App extends React.Component {
 
     onView(e, id){
         e.preventDefault();
-        alert(id);
+        window.location='.'+root+'/books/'+id+'/content'
     }
 
     onDownload(e, id){
         e.preventDefault();
-        client({
-            method: 'GET',
-            path: root+'/books/'+id+'/content',
-            headers: {'Content-Type': 'application/octet-stream','Content-Disposition':'attachment'}
-        }).done(response => {
-            console.warn("download completed")
-        });
+        window.location='.'+root+'/books/'+id+'/content'
     }
 
     onDelete(e, id){
         e.preventDefault();
-        alert(id);
+        client({
+            method: 'DELETE',
+            path: root+'/books/'+id
+        }).done(response => {
+            this.loadingAllBooksForPage(this.currentPageNumber)
+        });
     }
 
     onEdit(book){
