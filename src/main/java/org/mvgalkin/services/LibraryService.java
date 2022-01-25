@@ -20,4 +20,5 @@ public interface LibraryService {
     Book save(Book book);
     void update(long id, Book book);
     void delete(long id);
+    boolean isExists(long id);
 }

@@ -14,23 +14,43 @@ class App extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {isAuthorized: true, best_books: [], paged_books: {}};
+        this.state = {
+            isAuthorized: true,
+            bestBooks: [],
+            pageWithBooks: {}
+        };
     }
 
     componentDidMount() {
         if (!this.state.isAuthorized) {
-            client({method: 'GET', path: root+'/best_books'}).done(response => {
-                var newState = this.state;
-                newState.best_books = response.entity
-                this.setState(newState);
-            });
+            this.loadingBestBooks()
         } else {
-            client({method: 'GET', path: root+'/books'}).done(response => {
-                var newState = this.state;
-                newState.paged_books = response.entity
-                this.setState(newState);
-            });
+            this.loadingAllBooksForPage()
         }
+    }
+
+    loadingBestBooks() {
+        client({method: 'GET', path: root+'/best_books'}).done(response => {
+            this.setState({
+                isAuthorized: this.state.isAuthorized,
+                bestBooks: response.entity,
+                pageWithBooks: this.state.pageWithBooks
+            });
+        });
+    }
+
+    loadingAllBooksForPage(){
+        client({method: 'GET', path: root+'/books'}).done(response => {
+            this.setState({
+                isAuthorized: this.state.isAuthorized,
+                bestBooks: this.state.bestBooks,
+                pageWithBooks: response.entity
+            });
+        });
+    }
+
+    onAdd(book){
+        alert(book);
     }
 
     render() {
@@ -39,7 +59,7 @@ class App extends React.Component {
                 <div>
                     <RequestAuthForm/>
                     <br/><br/>
-                    <BestBooks books={this.state.best_books}/>
+                    <BestBooks books={this.state.pageWithBooks}/>
                 </div>
             )
         } else {
@@ -47,7 +67,7 @@ class App extends React.Component {
                 <div>
                     <SucceededAuthForm/>
                     <br/><br/>
-                    <EditableBooksList paged_books={this.state.paged_books}/>
+                    <EditableBooksList pageWithBooks={this.state.pageWithBooks} onAdd={this.onAdd}/>
                 </div>
             )
         }

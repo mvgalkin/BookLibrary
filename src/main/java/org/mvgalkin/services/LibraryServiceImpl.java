@@ -115,4 +115,9 @@ public class LibraryServiceImpl implements LibraryService {
     public void delete(long id) {
         booksRepository.deleteById(id);
     }
+
+    @Override
+    public boolean isExists(long id) {
+        return booksRepository.existsById(id);
+    }
 }

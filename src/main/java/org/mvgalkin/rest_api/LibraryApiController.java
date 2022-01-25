@@ -1,5 +1,6 @@
 package org.mvgalkin.rest_api;
 
+import org.mvgalkin.models.Book;
 import org.mvgalkin.models.BookInfo;
 import org.mvgalkin.services.LibraryService;
 import org.springframework.data.domain.Page;
@@ -129,6 +130,32 @@ public class LibraryApiController {
 
         //запуск БЛ
         return ResponseEntity.ok().body(libraryService.findBooksByGenre(genre, pageNumber, pageSize));
+    }
+
+    @PostMapping("/books")
+    public ResponseEntity<?> addBook(@RequestBody Book book){
+        Book savedBook = libraryService.save(book);
+        return ResponseEntity.ok().body(savedBook);
+    }
+
+    @PutMapping("/books/{id}")
+    public ResponseEntity<?> updateBook(@PathVariable("id")long id, @RequestBody Book book){
+        if (libraryService.isExists(id)) {
+            libraryService.update(id, book);
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/books/{id}")
+    public ResponseEntity<?> deleteBook(@PathVariable("id") long id){
+        if (libraryService.isExists(id)) {
+            libraryService.delete(id);
+            return ResponseEntity.ok().body("Book has been deleted successfully.");
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
 

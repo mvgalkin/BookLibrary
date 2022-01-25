@@ -1,17 +1,20 @@
+import {AddDialog} from "./managing_books";
+
 const React = require("react");
 
 export class EditableBooksList extends React.Component{
+
     render() {
-        var pageNumber = this.props.paged_books?.pageable?.pageNumber
+        var pageNumber = this.props.pageWithBooks?.pageable?.pageNumber
         if (pageNumber == null) {
             pageNumber = 0
         }
-        var totalPages = this.props.paged_books?.totalPages
+        var totalPages = this.props.pageWithBooks?.totalPages
         if (totalPages == null) {
             totalPages = 1
         }
-        const content = this.props.paged_books.content
-        console.warn(content)
+        const content = this.props.pageWithBooks.content
+
         return (
             <div>
                 <h2>Наша библиотека:</h2>
@@ -20,9 +23,7 @@ export class EditableBooksList extends React.Component{
                         <PagingInfo pageNumber={pageNumber}
                                     totalPages={totalPages}/>
                     </div>
-                    <div align="left">
-                        <input type="button" value="Добавить"/>
-                    </div>
+                    <AddDialog onAdd={this.props.onAdd}/>
                     <BookInfoList books={content}/>
                     <div align="center">
                         <ManagePaging pageNumber={pageNumber}
