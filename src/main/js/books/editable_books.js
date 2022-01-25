@@ -1,4 +1,4 @@
-import {AddDialog} from "./managing_books";
+import {AddDialog,EditDialog} from "./managing_books";
 
 const React = require("react");
 
@@ -24,10 +24,11 @@ export class EditableBooksList extends React.Component{
                                     totalPages={totalPages}/>
                     </div>
                     <AddDialog onAdd={this.props.onAdd}/>
-                    <BookInfoList books={content}/>
+                    <BookInfoList books={content} onView={this.props.onView} onDownload={this.props.onDownload} onEdit={this.props.onEdit} onDelete={this.props.onDelete}/>
                     <div align="center">
                         <ManagePaging pageNumber={pageNumber}
-                                      totalPages={totalPages}/>
+                                      totalPages={totalPages}
+                                        onNavigateToPage={this.props.onNavigateToPage}/>
                     </div>
                 </form>
             </div>
@@ -48,7 +49,7 @@ class ManagePaging extends React.Component{
         var pages
         for (var i=0; i<this.props.totalPages; i++ ) {
             var isCurrent = i===this.props.pageNumber
-           pages = <Page is_current_page={isCurrent} number={i}/>
+           pages = <Page is_current_page={isCurrent} number={i} onNavigateToPage={this.props.onNavigateToPage}/>
         }
         return(
             <div>
@@ -67,7 +68,7 @@ class Page extends React.Component{
             )
         } else {
             return(
-                <a href="">{this.props.number}</a>
+                <a href="" onClick={(e)=>{this.props.onNavigateToPage(e, this.props.number)}}>{this.props.number}</a>
             )
         }
     }
@@ -92,7 +93,7 @@ class BookInfoList extends React.Component{
             )
         } else {
             const books=this.props.books?.map(book =>
-                    <BookInfo key={book.name} books={book}/>
+                    <BookInfo key={book.name} book={book} onView={this.props.onView} onDownload={this.props.onDownload} onEdit={this.props.onEdit} onDelete={this.props.onDelete}/>
                 );
             return (
                 <table className="books">
@@ -116,15 +117,16 @@ class BookInfo extends React.Component{
     render() {
         return (
             <tr>
-                <td>{this.props.books.name}</td>
-                <td>{this.props.books.cover}</td>
-                <td>{this.props.books.authors.map(a => a.name).join(', ')}</td>
-                <td>{this.props.books.genres.map(g => g.name).join(', ')}</td>
+                <td>{this.props.book.name}</td>
+                <td>{this.props.book.cover}</td>
+                <td>{this.props.book.authors.map(a => a.name).join(', ')}</td>
+                <td>{this.props.book.genres.map(g => g.name).join(', ')}</td>
                 <td>
-                    <input type="button" value="Просмотр"/>&nbsp;
-                    <input type="button" value="Загрузить"/>&nbsp;
-                    <input type="button" value="Редактировать"/>&nbsp;
-                    <input type="button" value="Удалить"/>
+                    <input type="hidden" value={this.props.book.id}/>
+                    <input type="button" value="Просмотр" onClick={(e)=>{this.props.onView(e,this.props.book.id)}}/>&nbsp;
+                    <input type="button" value="Загрузить" onClick={(e)=>{this.props.onDownload(e,this.props.book.id)}}/>&nbsp;
+                    <EditDialog book={this.props.book} onEdit={this.props.onEdit}/>&nbsp;
+                    <input type="button" value="Удалить" onClick={(e)=>{this.props.onDelete(e,this.props.book.id)}}/>
                 </td>
             </tr>
         )

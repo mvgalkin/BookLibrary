@@ -41693,6 +41693,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _auth_auth__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./auth/auth */ "./src/main/js/auth/auth.js");
 /* harmony import */ var _books_best_books_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./books/best_books.js */ "./src/main/js/books/best_books.js");
 /* harmony import */ var _books_editable_books_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./books/editable_books.js */ "./src/main/js/books/editable_books.js");
+/* harmony import */ var mobx__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! mobx */ "./node_modules/mobx/dist/mobx.esm.js");
+/* harmony import */ var mobx_react__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! mobx-react */ "./node_modules/mobx-react/dist/mobxreact.esm.js");
 
 
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
@@ -41716,6 +41718,8 @@ function _assertThisInitialized(self) { if (self === void 0) { throw new Referen
 function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+
 
 
 
@@ -41745,6 +41749,13 @@ var App = /*#__PURE__*/function (_React$Component) {
       bestBooks: [],
       pageWithBooks: {}
     };
+    _this.onNavigateToPage = _this.onNavigateToPage.bind(_assertThisInitialized(_this));
+    _this.onAdd = _this.onAdd.bind(_assertThisInitialized(_this));
+    _this.onEdit = _this.onEdit.bind(_assertThisInitialized(_this));
+    _this.onDelete = _this.onDelete.bind(_assertThisInitialized(_this));
+    _this.onDownload = _this.onDownload.bind(_assertThisInitialized(_this));
+    _this.onView = _this.onView.bind(_assertThisInitialized(_this));
+    _this.currentPageNumber = 0;
     return _this;
   }
 
@@ -41754,7 +41765,7 @@ var App = /*#__PURE__*/function (_React$Component) {
       if (!this.state.isAuthorized) {
         this.loadingBestBooks();
       } else {
-        this.loadingAllBooksForPage();
+        this.loadingAllBooksForPage(this.currentPageNumber);
       }
     }
   }, {
@@ -41775,12 +41786,12 @@ var App = /*#__PURE__*/function (_React$Component) {
     }
   }, {
     key: "loadingAllBooksForPage",
-    value: function loadingAllBooksForPage() {
+    value: function loadingAllBooksForPage(pageNumber) {
       var _this3 = this;
 
       client({
         method: 'GET',
-        path: root + '/books'
+        path: root + '/books?pagenumber=' + pageNumber
       }).done(function (response) {
         _this3.setState({
           isAuthorized: _this3.state.isAuthorized,
@@ -41792,7 +41803,68 @@ var App = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "onAdd",
     value: function onAdd(book) {
-      alert(book);
+      var _this4 = this;
+
+      client({
+        method: 'POST',
+        path: root + '/books',
+        entity: book,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }).done(function (response) {
+        _this4.loadingAllBooksForPage(_this4.currentPageNumber);
+      });
+    }
+  }, {
+    key: "onView",
+    value: function onView(e, id) {
+      e.preventDefault();
+      alert(id);
+    }
+  }, {
+    key: "onDownload",
+    value: function onDownload(e, id) {
+      e.preventDefault();
+      client({
+        method: 'GET',
+        path: root + '/books/' + id + '/content',
+        headers: {
+          'Content-Type': 'application/octet-stream',
+          'Content-Disposition': 'attachment'
+        }
+      }).done(function (response) {
+        console.warn("download completed");
+      });
+    }
+  }, {
+    key: "onDelete",
+    value: function onDelete(e, id) {
+      e.preventDefault();
+      alert(id);
+    }
+  }, {
+    key: "onEdit",
+    value: function onEdit(book) {
+      var _this5 = this;
+
+      client({
+        method: 'PUT',
+        path: root + '/books/' + book.id,
+        entity: book,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }).done(function (response) {
+        _this5.loadingAllBooksForPage(_this5.currentPageNumber);
+      });
+    }
+  }, {
+    key: "onNavigateToPage",
+    value: function onNavigateToPage(e, pageNumber) {
+      e.preventDefault();
+      this.currentPageNumber = pageNumber;
+      this.loadingAllBooksForPage(pageNumber);
     }
   }, {
     key: "render",
@@ -41804,7 +41876,12 @@ var App = /*#__PURE__*/function (_React$Component) {
       } else {
         return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(_auth_auth__WEBPACK_IMPORTED_MODULE_0__["SucceededAuthForm"], null), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement(_books_editable_books_js__WEBPACK_IMPORTED_MODULE_2__["EditableBooksList"], {
           pageWithBooks: this.state.pageWithBooks,
-          onAdd: this.onAdd
+          onAdd: this.onAdd,
+          onView: this.onView,
+          onDownload: this.onDownload,
+          onEdit: this.onEdit,
+          onDelete: this.onDelete,
+          onNavigateToPage: this.onNavigateToPage
         }));
       }
     }
@@ -42098,12 +42175,17 @@ var EditableBooksList = /*#__PURE__*/function (_React$Component) {
       })), /*#__PURE__*/React.createElement(_managing_books__WEBPACK_IMPORTED_MODULE_0__["AddDialog"], {
         onAdd: this.props.onAdd
       }), /*#__PURE__*/React.createElement(BookInfoList, {
-        books: content
+        books: content,
+        onView: this.props.onView,
+        onDownload: this.props.onDownload,
+        onEdit: this.props.onEdit,
+        onDelete: this.props.onDelete
       }), /*#__PURE__*/React.createElement("div", {
         align: "center"
       }, /*#__PURE__*/React.createElement(ManagePaging, {
         pageNumber: pageNumber,
-        totalPages: totalPages
+        totalPages: totalPages,
+        onNavigateToPage: this.props.onNavigateToPage
       }))));
     }
   }]);
@@ -42152,7 +42234,8 @@ var ManagePaging = /*#__PURE__*/function (_React$Component3) {
         var isCurrent = i === this.props.pageNumber;
         pages = /*#__PURE__*/React.createElement(Page, {
           is_current_page: isCurrent,
-          number: i
+          number: i,
+          onNavigateToPage: this.props.onNavigateToPage
         });
       }
 
@@ -42179,11 +42262,16 @@ var Page = /*#__PURE__*/function (_React$Component4) {
   _createClass(Page, [{
     key: "render",
     value: function render() {
+      var _this = this;
+
       if (this.props.is_current_page) {
         return /*#__PURE__*/React.createElement("b", null, this.props.number);
       } else {
         return /*#__PURE__*/React.createElement("a", {
-          href: ""
+          href: "",
+          onClick: function onClick(e) {
+            _this.props.onNavigateToPage(e, _this.props.number);
+          }
         }, this.props.number);
       }
     }
@@ -42206,6 +42294,8 @@ var BookInfoList = /*#__PURE__*/function (_React$Component5) {
   _createClass(BookInfoList, [{
     key: "render",
     value: function render() {
+      var _this2 = this;
+
       if (this.props.books === undefined) {
         return /*#__PURE__*/React.createElement("table", {
           className: "books"
@@ -42216,7 +42306,11 @@ var BookInfoList = /*#__PURE__*/function (_React$Component5) {
         var books = (_this$props$books = this.props.books) === null || _this$props$books === void 0 ? void 0 : _this$props$books.map(function (book) {
           return /*#__PURE__*/React.createElement(BookInfo, {
             key: book.name,
-            books: book
+            book: book,
+            onView: _this2.props.onView,
+            onDownload: _this2.props.onDownload,
+            onEdit: _this2.props.onEdit,
+            onDelete: _this2.props.onDelete
           });
         });
         return /*#__PURE__*/React.createElement("table", {
@@ -42243,22 +42337,36 @@ var BookInfo = /*#__PURE__*/function (_React$Component6) {
   _createClass(BookInfo, [{
     key: "render",
     value: function render() {
-      return /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, this.props.books.name), /*#__PURE__*/React.createElement("td", null, this.props.books.cover), /*#__PURE__*/React.createElement("td", null, this.props.books.authors.map(function (a) {
+      var _this3 = this;
+
+      return /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, this.props.book.name), /*#__PURE__*/React.createElement("td", null, this.props.book.cover), /*#__PURE__*/React.createElement("td", null, this.props.book.authors.map(function (a) {
         return a.name;
-      }).join(', ')), /*#__PURE__*/React.createElement("td", null, this.props.books.genres.map(function (g) {
+      }).join(', ')), /*#__PURE__*/React.createElement("td", null, this.props.book.genres.map(function (g) {
         return g.name;
       }).join(', ')), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("input", {
+        type: "hidden",
+        value: this.props.book.id
+      }), /*#__PURE__*/React.createElement("input", {
         type: "button",
-        value: "\u041F\u0440\u043E\u0441\u043C\u043E\u0442\u0440"
+        value: "\u041F\u0440\u043E\u0441\u043C\u043E\u0442\u0440",
+        onClick: function onClick(e) {
+          _this3.props.onView(e, _this3.props.book.id);
+        }
       }), "\xA0", /*#__PURE__*/React.createElement("input", {
         type: "button",
-        value: "\u0417\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044C"
+        value: "\u0417\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044C",
+        onClick: function onClick(e) {
+          _this3.props.onDownload(e, _this3.props.book.id);
+        }
+      }), "\xA0", /*#__PURE__*/React.createElement(_managing_books__WEBPACK_IMPORTED_MODULE_0__["EditDialog"], {
+        book: this.props.book,
+        onEdit: this.props.onEdit
       }), "\xA0", /*#__PURE__*/React.createElement("input", {
         type: "button",
-        value: "\u0420\u0435\u0434\u0430\u043A\u0442\u0438\u0440\u043E\u0432\u0430\u0442\u044C"
-      }), "\xA0", /*#__PURE__*/React.createElement("input", {
-        type: "button",
-        value: "\u0423\u0434\u0430\u043B\u0438\u0442\u044C"
+        value: "\u0423\u0434\u0430\u043B\u0438\u0442\u044C",
+        onClick: function onClick(e) {
+          _this3.props.onDelete(e, _this3.props.book.id);
+        }
       })));
     }
   }]);
@@ -42272,19 +42380,18 @@ var BookInfo = /*#__PURE__*/function (_React$Component6) {
 /*!*********************************************!*\
   !*** ./src/main/js/books/managing_books.js ***!
   \*********************************************/
-/*! exports provided: AddDialog */
+/*! exports provided: AddDialog, EditDialog */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AddDialog", function() { return AddDialog; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EditDialog", function() { return EditDialog; });
 /* harmony import */ var mobx_react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mobx-react */ "./node_modules/mobx-react/dist/mobxreact.esm.js");
 /* harmony import */ var mobx__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! mobx */ "./node_modules/mobx/dist/mobx.esm.js");
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
-var _class, _class2, _descriptor;
-
-function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
+var _class, _class2;
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -42306,12 +42413,6 @@ function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Re
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
-
-function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
-
 
 
 
@@ -42331,6 +42432,13 @@ var authorsCount = Object(mobx__WEBPACK_IMPORTED_MODULE_1__["observable"])({
   },
   setDefault: function setDefault() {
     this.count = 1;
+  },
+  setCount: function setCount(newVal) {
+    if (newVal < 1) {
+      this.count = 1;
+    } else {
+      this.count = newVal;
+    }
   }
 });
 var genresCount = Object(mobx__WEBPACK_IMPORTED_MODULE_1__["observable"])({
@@ -42345,9 +42453,16 @@ var genresCount = Object(mobx__WEBPACK_IMPORTED_MODULE_1__["observable"])({
   },
   setDefault: function setDefault() {
     this.count = 1;
+  },
+  setCount: function setCount(newVal) {
+    if (newVal < 1) {
+      this.count = 1;
+    } else {
+      this.count = newVal;
+    }
   }
 });
-var AddDialog = Object(mobx_react__WEBPACK_IMPORTED_MODULE_0__["observer"])(_class = (_class2 = /*#__PURE__*/function (_React$Component) {
+var AddDialog = Object(mobx_react__WEBPACK_IMPORTED_MODULE_0__["observer"])(_class = /*#__PURE__*/function (_React$Component) {
   _inherits(AddDialog, _React$Component);
 
   var _super = _createSuper(AddDialog);
@@ -42358,9 +42473,8 @@ var AddDialog = Object(mobx_react__WEBPACK_IMPORTED_MODULE_0__["observer"])(_cla
     _classCallCheck(this, AddDialog);
 
     _this = _super.call(this, props);
-
-    _initializerDefineProperty(_assertThisInitialized(_this), "genresCount", _descriptor, _assertThisInitialized(_this));
-
+    authorsCount.setDefault();
+    genresCount.setDefault();
     _this.handleSubmit = _this.handleSubmit.bind(_assertThisInitialized(_this));
     _this.addAuthor = _this.addAuthor.bind(_assertThisInitialized(_this));
     _this.removeAuthor = _this.removeAuthor.bind(_assertThisInitialized(_this));
@@ -42474,7 +42588,7 @@ var AddDialog = Object(mobx_react__WEBPACK_IMPORTED_MODULE_0__["observer"])(_cla
         href: "#",
         title: "Close",
         className: "close"
-      }, "X"), /*#__PURE__*/React.createElement("h2", null, "Add new book"), /*#__PURE__*/React.createElement("input", {
+      }, "X"), /*#__PURE__*/React.createElement("h2", null, "\u0414\u043E\u0431\u0430\u0432\u043B\u0435\u043D\u0438\u0435 \u043A\u043D\u0438\u0433\u0438"), /*#__PURE__*/React.createElement("input", {
         type: "text",
         placeholder: "\u041D\u0430\u0437\u0432\u0430\u043D\u0438\u0435",
         ref: "book_name",
@@ -42512,14 +42626,224 @@ var AddDialog = Object(mobx_react__WEBPACK_IMPORTED_MODULE_0__["observer"])(_cla
   }]);
 
   return AddDialog;
-}(React.Component), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "genresCount", [mobx__WEBPACK_IMPORTED_MODULE_1__["observable"]], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function initializer() {
-    return 1;
+}(React.Component)) || _class;
+var EditDialog = Object(mobx_react__WEBPACK_IMPORTED_MODULE_0__["observer"])(_class2 = /*#__PURE__*/function (_React$Component2) {
+  _inherits(EditDialog, _React$Component2);
+
+  var _super2 = _createSuper(EditDialog);
+
+  function EditDialog(props) {
+    var _this2;
+
+    _classCallCheck(this, EditDialog);
+
+    _this2 = _super2.call(this, props);
+    authorsCount.setCount(props.book.authors.length);
+    genresCount.setCount(props.book.genres.length);
+    _this2.handleSubmit = _this2.handleSubmit.bind(_assertThisInitialized(_this2));
+    _this2.addAuthor = _this2.addAuthor.bind(_assertThisInitialized(_this2));
+    _this2.removeAuthor = _this2.removeAuthor.bind(_assertThisInitialized(_this2));
+    _this2.addGenre = _this2.addGenre.bind(_assertThisInitialized(_this2));
+    _this2.removeGenre = _this2.removeGenre.bind(_assertThisInitialized(_this2));
+    _this2.showDialog = _this2.showDialog.bind(_assertThisInitialized(_this2));
+    return _this2;
   }
-})), _class2)) || _class;
+
+  _createClass(EditDialog, [{
+    key: "handleSubmit",
+    value: function handleSubmit(e) {
+      var _ReactDOM$findDOMNode, _ReactDOM$findDOMNode2;
+
+      e.preventDefault();
+      var book = {};
+      book.id = ReactDOM.findDOMNode(this.refs["book_id"]).value;
+      book.name = ReactDOM.findDOMNode(this.refs["book_name"]).value.trim();
+      book.cover = (_ReactDOM$findDOMNode = ReactDOM.findDOMNode(this.refs["book_cover"])) === null || _ReactDOM$findDOMNode === void 0 ? void 0 : _ReactDOM$findDOMNode.value;
+      book.content = (_ReactDOM$findDOMNode2 = ReactDOM.findDOMNode(this.refs["book_content"])) === null || _ReactDOM$findDOMNode2 === void 0 ? void 0 : _ReactDOM$findDOMNode2.value;
+      book.authors = [];
+      book.genres = [];
+
+      for (var i = 0; i < authorsCount.count; i++) {
+        var _ReactDOM$findDOMNode3;
+
+        book.authors.push({
+          id: (_ReactDOM$findDOMNode3 = ReactDOM.findDOMNode(this.refs["'author_id" + i + "'"])) === null || _ReactDOM$findDOMNode3 === void 0 ? void 0 : _ReactDOM$findDOMNode3.value,
+          name: ReactDOM.findDOMNode(this.refs["'author_name" + i + "'"]).value.trim()
+        });
+      }
+
+      for (var j = 0; j < genresCount.count; j++) {
+        var _ReactDOM$findDOMNode4;
+
+        book.genres.push({
+          id: (_ReactDOM$findDOMNode4 = ReactDOM.findDOMNode(this.refs["'genre_id" + j + "'"])) === null || _ReactDOM$findDOMNode4 === void 0 ? void 0 : _ReactDOM$findDOMNode4.value,
+          name: ReactDOM.findDOMNode(this.refs["'genre_name" + j + "'"]).value.trim()
+        });
+      }
+
+      console.warn(book);
+      this.props.onEdit(book); // Navigate away from the dialog to hide it.
+
+      window.location = "#";
+    }
+  }, {
+    key: "addAuthor",
+    value: function addAuthor(e) {
+      e.preventDefault();
+      authorsCount.add();
+    }
+  }, {
+    key: "removeAuthor",
+    value: function removeAuthor(e) {
+      e.preventDefault();
+      authorsCount.remove();
+    }
+  }, {
+    key: "addGenre",
+    value: function addGenre(e) {
+      e.preventDefault();
+      genresCount.add();
+    }
+  }, {
+    key: "removeGenre",
+    value: function removeGenre(e) {
+      e.preventDefault();
+      genresCount.remove();
+    }
+  }, {
+    key: "showDialog",
+    value: function showDialog(e) {
+      e.preventDefault();
+      window.location = "#editBook" + this.props.book.id;
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var _this3 = this;
+
+      var authorInputs = [];
+
+      for (var i = 0; i < authorsCount.count; i++) {
+        if (i < this.props.book.authors.length) {
+          authorInputs.push( /*#__PURE__*/React.createElement("p", {
+            key: "'author" + i + "'"
+          }, /*#__PURE__*/React.createElement("input", {
+            type: "hidden",
+            ref: "'author_id" + i + "'",
+            value: this.props.book.authors[i].id
+          }), /*#__PURE__*/React.createElement("input", {
+            type: "text",
+            placeholder: "\u0438\u043C\u044F",
+            ref: "'author_name" + i + "'",
+            className: "field",
+            defaultValue: this.props.book.authors[i].name
+          })));
+        } else {
+          authorInputs.push( /*#__PURE__*/React.createElement("p", {
+            key: "'author" + i + "'"
+          }, /*#__PURE__*/React.createElement("input", {
+            type: "text",
+            placeholder: "\u0438\u043C\u044F",
+            ref: "'author_name" + i + "'",
+            className: "field"
+          })));
+        }
+      }
+
+      var genreInputs = [];
+
+      for (var j = 0; j < genresCount.count; j++) {
+        if (j < this.props.book.genres.length) {
+          genreInputs.push( /*#__PURE__*/React.createElement("p", {
+            key: "'genre" + j + "'"
+          }, /*#__PURE__*/React.createElement("input", {
+            type: "hidden",
+            ref: "'genre_id" + j + "'",
+            value: this.props.book.genres[j].id
+          }), /*#__PURE__*/React.createElement("input", {
+            type: "text",
+            placeholder: "\u0438\u043C\u044F",
+            ref: "'genre_name" + j + "'",
+            className: "field",
+            defaultValue: this.props.book.genres[j].name
+          })));
+        } else {
+          genreInputs.push( /*#__PURE__*/React.createElement("p", {
+            key: "'genre" + j + "'"
+          }, /*#__PURE__*/React.createElement("input", {
+            type: "text",
+            placeholder: "\u0438\u043C\u044F",
+            ref: "'genre_name" + j + "'",
+            className: "field"
+          })));
+        }
+      }
+
+      var cover = function cover() {
+        if (_this3.props.book.cover != null) {
+          return /*#__PURE__*/React.createElement("input", {
+            type: "hidden",
+            ref: "book_cover",
+            value: _this3.props.book.cover
+          });
+        }
+      };
+
+      var content = function content() {
+        if (_this3.props.book.content != null) {
+          return /*#__PURE__*/React.createElement("input", {
+            type: "hidden",
+            ref: "book_content",
+            value: _this3.props.book.content
+          });
+        }
+      };
+
+      return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("input", {
+        type: "button",
+        value: "\u0420\u0435\u0434\u0430\u043A\u0442\u0438\u0440\u043E\u0432\u0430",
+        onClick: this.showDialog
+      }), /*#__PURE__*/React.createElement("div", {
+        id: "editBook" + this.props.book.id,
+        className: "modalDialog"
+      }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("a", {
+        href: "#",
+        title: "Close",
+        className: "close"
+      }, "X"), /*#__PURE__*/React.createElement("h2", null, "\u0420\u0435\u0434\u0430\u043A\u0442\u0438\u0440\u043E\u0432\u0430\u043D\u0438\u0435 \u043A\u043D\u0438\u0433\u0438"), /*#__PURE__*/React.createElement("input", {
+        type: "hidden",
+        ref: "book_id",
+        value: this.props.book.id
+      }), /*#__PURE__*/React.createElement("input", {
+        type: "text",
+        placeholder: "\u041D\u0430\u0437\u0432\u0430\u043D\u0438\u0435",
+        ref: "book_name",
+        className: "field",
+        defaultValue: this.props.book.name
+      }), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("br", null), cover(), content(), /*#__PURE__*/React.createElement("label", null, "\u0416\u0430\u043D\u0440\u044B:"), /*#__PURE__*/React.createElement("input", {
+        type: "button",
+        value: "+",
+        onClick: this.addGenre
+      }), /*#__PURE__*/React.createElement("input", {
+        type: "button",
+        value: "-",
+        onClick: this.removeGenre
+      }), genreInputs, /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("label", null, "\u0410\u0432\u0442\u043E\u0440\u044B:"), /*#__PURE__*/React.createElement("input", {
+        type: "button",
+        value: "+",
+        onClick: this.addAuthor
+      }), /*#__PURE__*/React.createElement("input", {
+        type: "button",
+        value: "-",
+        onClick: this.removeAuthor
+      }), authorInputs, /*#__PURE__*/React.createElement("button", {
+        onClick: this.handleSubmit
+      }, "\u0421\u043E\u0445\u0440\u0430\u043D\u0438\u0442\u044C"))));
+    }
+  }]);
+
+  return EditDialog;
+}(React.Component)) || _class2;
 
 /***/ }),
 

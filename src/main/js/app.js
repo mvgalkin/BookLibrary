@@ -3,6 +3,8 @@
 import {SucceededAuthForm, RequestAuthForm} from './auth/auth';
 import {BestBooks} from './books/best_books.js';
 import {EditableBooksList} from './books/editable_books.js';
+import {observable} from "mobx";
+import {observer} from "mobx-react";
 
 const React = require('react');
 const ReactDOM = require('react-dom');
@@ -19,13 +21,20 @@ class App extends React.Component {
             bestBooks: [],
             pageWithBooks: {}
         };
+        this.onNavigateToPage = this.onNavigateToPage.bind(this);
+        this.onAdd = this.onAdd.bind(this);
+        this.onEdit = this.onEdit.bind(this);
+        this.onDelete = this.onDelete.bind(this);
+        this.onDownload = this.onDownload.bind(this);
+        this.onView=this.onView.bind(this);
+        this.currentPageNumber = 0;
     }
 
     componentDidMount() {
         if (!this.state.isAuthorized) {
             this.loadingBestBooks()
         } else {
-            this.loadingAllBooksForPage()
+            this.loadingAllBooksForPage(this.currentPageNumber)
         }
     }
 
@@ -39,8 +48,8 @@ class App extends React.Component {
         });
     }
 
-    loadingAllBooksForPage(){
-        client({method: 'GET', path: root+'/books'}).done(response => {
+    loadingAllBooksForPage(pageNumber){
+        client({method: 'GET', path: root+'/books?pagenumber='+pageNumber}).done(response => {
             this.setState({
                 isAuthorized: this.state.isAuthorized,
                 bestBooks: this.state.bestBooks,
@@ -50,7 +59,52 @@ class App extends React.Component {
     }
 
     onAdd(book){
-        alert(book);
+        client({
+            method: 'POST',
+            path: root+'/books',
+            entity: book,
+            headers: {'Content-Type': 'application/json'}
+        }).done(response => {
+            this.loadingAllBooksForPage(this.currentPageNumber)
+        });
+    }
+
+    onView(e, id){
+        e.preventDefault();
+        alert(id);
+    }
+
+    onDownload(e, id){
+        e.preventDefault();
+        client({
+            method: 'GET',
+            path: root+'/books/'+id+'/content',
+            headers: {'Content-Type': 'application/octet-stream','Content-Disposition':'attachment'}
+        }).done(response => {
+            console.warn("download completed")
+        });
+    }
+
+    onDelete(e, id){
+        e.preventDefault();
+        alert(id);
+    }
+
+    onEdit(book){
+        client({
+            method: 'PUT',
+            path: root+'/books/'+book.id,
+            entity: book,
+            headers: {'Content-Type': 'application/json'}
+        }).done(response => {
+            this.loadingAllBooksForPage(this.currentPageNumber)
+        });
+    }
+
+    onNavigateToPage(e, pageNumber){
+        e.preventDefault();
+        this.currentPageNumber = pageNumber
+        this.loadingAllBooksForPage(pageNumber);
     }
 
     render() {
@@ -67,7 +121,7 @@ class App extends React.Component {
                 <div>
                     <SucceededAuthForm/>
                     <br/><br/>
-                    <EditableBooksList pageWithBooks={this.state.pageWithBooks} onAdd={this.onAdd}/>
+                    <EditableBooksList pageWithBooks={this.state.pageWithBooks} onAdd={this.onAdd} onView={this.onView} onDownload={this.onDownload} onEdit={this.onEdit} onDelete={this.onDelete} onNavigateToPage={this.onNavigateToPage}/>
                 </div>
             )
         }

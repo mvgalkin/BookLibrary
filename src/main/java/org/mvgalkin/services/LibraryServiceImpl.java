@@ -1,25 +1,30 @@
 package org.mvgalkin.services;
 
+import org.mvgalkin.dao.AuthorsDaoRepository;
 import org.mvgalkin.dao.BooksDaoRepository;
+import org.mvgalkin.dao.GenresDaoRepository;
+import org.mvgalkin.models.Author;
 import org.mvgalkin.models.Book;
 import org.mvgalkin.models.BookInfoView;
+import org.mvgalkin.models.Genre;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 @Service
 public class LibraryServiceImpl implements LibraryService {
 
     private final BooksDaoRepository booksRepository;
+    private final AuthorsDaoRepository authorsRepository;
+    private final GenresDaoRepository genresRepository;
 
-    public LibraryServiceImpl(BooksDaoRepository booksRepository) {
+    public LibraryServiceImpl(BooksDaoRepository booksRepository, AuthorsDaoRepository authorsRepository, GenresDaoRepository genresRepository) {
         this.booksRepository = booksRepository;
+        this.authorsRepository = authorsRepository;
+        this.genresRepository = genresRepository;
     }
 
     @Override
@@ -102,11 +107,23 @@ public class LibraryServiceImpl implements LibraryService {
 
     @Override
     public Book save(Book book) {
+        var savedAuthors = new HashSet<Author>();
+        authorsRepository.saveAll(book.getAuthors()).forEach(savedAuthors::add);
+        var savedGenres = new HashSet<Genre>();
+        genresRepository.saveAll(book.getGenres()).forEach(savedGenres::add);
+        book.setAuthors(savedAuthors);
+        book.setGenres(savedGenres);
         return booksRepository.save(book);
     }
 
     @Override
     public void update(long id, Book book) {
+        var savedAuthors = new HashSet<Author>();
+        authorsRepository.saveAll(book.getAuthors()).forEach(savedAuthors::add);
+        var savedGenres = new HashSet<Genre>();
+        genresRepository.saveAll(book.getGenres()).forEach(savedGenres::add);
+        book.setAuthors(savedAuthors);
+        book.setGenres(savedGenres);
         booksRepository.save(book);
     }
 

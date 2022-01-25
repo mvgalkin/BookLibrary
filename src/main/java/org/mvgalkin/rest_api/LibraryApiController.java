@@ -3,6 +3,7 @@ package org.mvgalkin.rest_api;
 import org.mvgalkin.models.Book;
 import org.mvgalkin.models.BookInfoView;
 import org.mvgalkin.services.LibraryService;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public class LibraryApiController {
 
     @GetMapping("/best_books")
     public @ResponseBody
-    Iterable<BookInfoView> getBooksByPages(
+    Iterable<BookInfoView> getBestBooks(
             @RequestParam(value = "count", defaultValue = "10") Integer limit
     ){
         //контроль входных параметров (требований нет, поэтому проверка чисто на адекватность)
@@ -134,6 +135,20 @@ public class LibraryApiController {
 
     @PostMapping("/books")
     public ResponseEntity<?> addBook(@RequestBody Book book){
+       if (book.getId() == null) {book.setId(0L);}
+       book.getAuthors().forEach(author -> {
+           if (author.getId()==null) {
+               author.setId(0L);
+           }
+       });
+
+        book.getGenres().forEach(genre -> {
+            if (genre.getId()==null) {
+                genre.setId(0L);
+            }
+        });
+
+        LoggerFactory.getLogger("LibraryApiController").error("Book=" + book.toString());
         Book savedBook = libraryService.save(book);
         return ResponseEntity.ok().body(savedBook);
     }
