@@ -1,21 +1,21 @@
 package org.mvgalkin.services;
 
 import org.mvgalkin.models.Book;
-import org.mvgalkin.models.BookInfo;
+import org.mvgalkin.models.BookInfoView;
 import org.springframework.data.domain.Page;
 
 import java.util.Optional;
 
 public interface LibraryService {
-    Iterable<BookInfo> getBestBooks(Integer limit);
-    Page<BookInfo> getBooksByPage(Integer pageNumber, Integer pageSize);
-    Optional<BookInfo> getBookInfo(long id);
+    Iterable<BookInfoView> getBestBooks(Integer limit);
+    Page<BookInfoView> getBooksByPage(Integer pageNumber, Integer pageSize);
+    Optional<BookInfoView> getBookInfoView(long id);
 
     Optional<byte[]> getBookContent(long id);
 
-    Page<BookInfo> findBooksByName(String partOfName, Integer pageNumber, Integer pageSize);
-    Page<BookInfo> findBooksByAuthorName(String name, Integer pageNumber, Integer pageSize);
-    Page<BookInfo> findBooksByGenre(String genre, Integer pageNumber, Integer pageSize);
+    Page<BookInfoView> findBooksByName(String partOfName, Integer pageNumber, Integer pageSize);
+    Page<BookInfoView> findBooksByAuthorName(String name, Integer pageNumber, Integer pageSize);
+    Page<BookInfoView> findBooksByGenre(String genre, Integer pageNumber, Integer pageSize);
 
     Book save(Book book);
     void update(long id, Book book);

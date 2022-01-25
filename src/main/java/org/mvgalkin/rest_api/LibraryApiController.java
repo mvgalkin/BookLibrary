@@ -1,7 +1,7 @@
 package org.mvgalkin.rest_api;
 
 import org.mvgalkin.models.Book;
-import org.mvgalkin.models.BookInfo;
+import org.mvgalkin.models.BookInfoView;
 import org.mvgalkin.services.LibraryService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ public class LibraryApiController {
 
     @GetMapping("/best_books")
     public @ResponseBody
-    Iterable<BookInfo> getBooksByPages(
+    Iterable<BookInfoView> getBooksByPages(
             @RequestParam(value = "count", defaultValue = "10") Integer limit
     ){
         //контроль входных параметров (требований нет, поэтому проверка чисто на адекватность)
@@ -36,7 +36,7 @@ public class LibraryApiController {
 
     @GetMapping("/books")
     public @ResponseBody
-    Page<BookInfo> getBooksByPages(
+    Page<BookInfoView> getBooksByPages(
             @RequestParam(value = "pagenumber", defaultValue = "0") Integer pageNumber,
             @RequestParam(value = "pagesize", defaultValue = "20") Integer pageSize
     ){
@@ -50,10 +50,10 @@ public class LibraryApiController {
 
     @GetMapping("/books/{id}/info")
     public @ResponseBody
-    ResponseEntity<BookInfo> getBookInfo(
+    ResponseEntity<BookInfoView> getBookInfoView(
             @PathVariable(value = "id") Long id
     ){
-        var book = libraryService.getBookInfo(id);
+        var book = libraryService.getBookInfoView(id);
         if (book.isEmpty()) {
             return ResponseEntity.notFound().build();
         } else {
@@ -80,7 +80,7 @@ public class LibraryApiController {
 
     @GetMapping("/books/find/name/{name}")
     public @ResponseBody
-    ResponseEntity<Page<BookInfo>> findBooksByName(
+    ResponseEntity<Page<BookInfoView>> findBooksByName(
             @PathVariable(value = "name") String name,
             @RequestParam(value = "pagenumber", defaultValue = "0") Integer pageNumber,
             @RequestParam(value = "pagesize", defaultValue = "20") Integer pageSize
@@ -98,7 +98,7 @@ public class LibraryApiController {
 
     @GetMapping("/books/find/author/{name}")
     public @ResponseBody
-    ResponseEntity<Page<BookInfo>> findBooksByAuthorName(
+    ResponseEntity<Page<BookInfoView>> findBooksByAuthorName(
             @PathVariable(value = "name") String name,
             @RequestParam(value = "pagenumber", defaultValue = "0") Integer pageNumber,
             @RequestParam(value = "pagesize", defaultValue = "20") Integer pageSize
@@ -116,7 +116,7 @@ public class LibraryApiController {
 
     @GetMapping("/books/find/genre/{genre}")
     public @ResponseBody
-    ResponseEntity<Page<BookInfo>> findBooksByGenre(
+    ResponseEntity<Page<BookInfoView>> findBooksByGenre(
             @PathVariable(value = "genre") String genre,
             @RequestParam(value = "pagenumber", defaultValue = "0") Integer pageNumber,
             @RequestParam(value = "pagesize", defaultValue = "20") Integer pageSize

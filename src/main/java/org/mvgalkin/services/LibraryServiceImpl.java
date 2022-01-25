@@ -2,7 +2,7 @@ package org.mvgalkin.services;
 
 import org.mvgalkin.dao.BooksDaoRepository;
 import org.mvgalkin.models.Book;
-import org.mvgalkin.models.BookInfo;
+import org.mvgalkin.models.BookInfoView;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,24 +23,24 @@ public class LibraryServiceImpl implements LibraryService {
     }
 
     @Override
-    public List<BookInfo> getBestBooks(Integer limit) {
+    public List<BookInfoView> getBestBooks(Integer limit) {
         Iterable<Book> allBooksSource = booksRepository.findAll();
-        List<BookInfo> bestBooks = new ArrayList<>();
+        List<BookInfoView> bestBooks = new ArrayList<>();
         if (booksRepository.count()<=limit) {
-            allBooksSource.forEach(b -> bestBooks.add(b.getInfo()));
+            allBooksSource.forEach(bestBooks::add);
             return bestBooks;
         } else {
-            allBooksSource.forEach(b -> bestBooks.add(b.getInfo()));
+            allBooksSource.forEach(bestBooks::add);
             return getRandomElements(bestBooks, limit);
         }
     }
 
 
-    public List<BookInfo> getRandomElements(List<BookInfo> list, int totalItems)
+    public List<BookInfoView> getRandomElements(List<BookInfoView> list, int totalItems)
     {
         Random rand = new Random();
 
-        List<BookInfo> newList = new ArrayList<>();
+        List<BookInfoView> newList = new ArrayList<>();
         for (int i = 0; i < totalItems; i++) {
 
             int randomIndex = rand.nextInt(list.size());
@@ -53,15 +53,15 @@ public class LibraryServiceImpl implements LibraryService {
     }
 
     @Override
-    public Page<BookInfo> getBooksByPage(Integer pageNumber, Integer pageSize) {
+    public Page<BookInfoView> getBooksByPage(Integer pageNumber, Integer pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        return booksRepository.findAll(pageable).map(Book::getInfo);
+        return booksRepository.findAll(pageable).map(book -> book);
 
     }
 
     @Override
-    public Optional<BookInfo> getBookInfo(long id) {
-        return booksRepository.findById(id).map(Book::getInfo);
+    public Optional<BookInfoView> getBookInfoView(long id) {
+        return booksRepository.findById(id).map(book -> book);
     }
 
     @Override
@@ -80,25 +80,24 @@ public class LibraryServiceImpl implements LibraryService {
     }
 
     @Override
-    public Page<BookInfo> findBooksByName(String partOfName, Integer pageNumber, Integer pageSize) {
+    public Page<BookInfoView> findBooksByName(String partOfName, Integer pageNumber, Integer pageSize) {
         partOfName = "%"+partOfName+"%";
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Page<Book> page = booksRepository.findByInfo_NameLikeIgnoreCase(partOfName, pageable);
-        return page.map(Book::getInfo);
+        return booksRepository.findByNameLikeIgnoreCase(partOfName, pageable);
     }
 
     @Override
-    public Page<BookInfo> findBooksByAuthorName(String name, Integer pageNumber, Integer pageSize) {
+    public Page<BookInfoView> findBooksByAuthorName(String name, Integer pageNumber, Integer pageSize) {
         name = "%"+name+"%";
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        return booksRepository.findByInfo_Authors_NameLikeIgnoreCase(name, pageable).map(Book::getInfo);
+        return booksRepository.findByAuthors_NameLikeIgnoreCase(name, pageable);
     }
 
     @Override
-    public Page<BookInfo> findBooksByGenre(String genre, Integer pageNumber, Integer pageSize) {
+    public Page<BookInfoView> findBooksByGenre(String genre, Integer pageNumber, Integer pageSize) {
         genre = "%"+genre+"%";
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        return booksRepository.findByInfo_Genres_NameLikeIgnoreCase(genre, pageable).map(Book::getInfo);
+        return booksRepository.findByGenres_NameLikeIgnoreCase(genre, pageable);
     }
 
     @Override
