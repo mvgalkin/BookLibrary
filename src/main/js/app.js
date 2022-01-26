@@ -41,15 +41,6 @@ class App extends React.Component {
     }
 
     componentDidMount() {
-        this.checkAuth()
-        if (!this.state.isAuthorized) {
-            this.loadingBestBooks()
-        } else {
-            this.loadingAllBooksForPage(this.currentPageNumber)
-        }
-    }
-
-    checkAuth(){
         fetch("/api/login", {headers:{'X-Requested-With': 'XMLHttpRequest'}})
             .then(response=>{
                 if (response.status === 200) {
@@ -90,6 +81,13 @@ class App extends React.Component {
                     pageWithBooks: this.state.pageWithBooks
                 });
             })
+            .then((data)=>{
+                if (!this.state.isAuthorized) {
+                    this.loadingBestBooks()
+                } else {
+                    this.loadingAllBooksForPage(this.currentPageNumber)
+                }
+            })
             .catch(error=>{
                 if (this.state.isAuthorized) {
                     this.setState({
@@ -102,15 +100,16 @@ class App extends React.Component {
                         pageWithBooks: this.state.pageWithBooks
                     });
                 }
-            })
+            });
     }
 
     loadingBestBooks() {
         client({method: 'GET', path: root+'/best_books'}).done(response => {
+            console.warn(response.entity)
             this.setState({
                 isAuthorized: this.state.isAuthorized,
-                isFindBy: this.state.isFindBy,
-                findCaption: this.state.findCaption,
+                isFindBy: "",
+                findCaption: "",
                 isFindText: this.state.isFindText,
                 userName: this.state.userName,
                 bestBooks: response.entity,
@@ -123,8 +122,8 @@ class App extends React.Component {
         client({method: 'GET', path: root+'/books?pagenumber='+pageNumber}).done(response => {
             this.setState({
                 isAuthorized: this.state.isAuthorized,
-                isFindBy: this.state.isFindBy,
-                findCaption: this.state.findCaption,
+                isFindBy: "",
+                findCaption: "",
                 isFindText: this.state.isFindText,
                 userName: this.state.userName,
                 bestBooks: this.state.bestBooks,
@@ -194,7 +193,8 @@ class App extends React.Component {
         client({method: 'GET', path: root+'/books/find/name/'+name+'?pagenumber='+this.currentPageNumber}).done(response => {
             this.setState({
                 isAuthorized: this.state.isAuthorized,
-                isFindBy: this.state.isFindBy,
+                isFindBy: "name",
+                findCaption: "Результат поиска по Имени: '"+name+"'",
                 userName: this.state.userName,
                 bestBooks: this.state.bestBooks,
                 pageWithBooks: response.entity
@@ -207,7 +207,8 @@ class App extends React.Component {
         client({method: 'GET', path: root+'/books/find/author/'+name+'?pagenumber='+this.currentPageNumber}).done(response => {
             this.setState({
                 isAuthorized: this.state.isAuthorized,
-                isFindBy: this.state.isFindBy,
+                isFindBy: "author",
+                findCaption: "Результат поиска по Автору: '"+name+"'",
                 userName: this.state.userName,
                 bestBooks: this.state.bestBooks,
                 pageWithBooks: response.entity
@@ -220,7 +221,8 @@ class App extends React.Component {
         client({method: 'GET', path: root+'/books/genre/name/'+name+'?pagenumber='+this.currentPageNumber}).done(response => {
             this.setState({
                 isAuthorized: this.state.isAuthorized,
-                isFindBy: this.state.isFindBy,
+                isFindBy: "genre",
+                findCaption: "Результат поиска по Жанру: '"+name+"'",
                 userName: this.state.userName,
                 bestBooks: this.state.bestBooks,
                 pageWithBooks: response.entity
@@ -245,7 +247,7 @@ class App extends React.Component {
                 <div>
                     <RequestAuthForm/>
                     <br/><br/>
-                    <BestBooks books={this.state.pageWithBooks}/>
+                    <BestBooks books={this.state.bestBooks}/>
                 </div>
             )
         } else {

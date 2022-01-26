@@ -41770,17 +41770,6 @@ var App = /*#__PURE__*/function (_React$Component) {
   _createClass(App, [{
     key: "componentDidMount",
     value: function componentDidMount() {
-      this.checkAuth();
-
-      if (!this.state.isAuthorized) {
-        this.loadingBestBooks();
-      } else {
-        this.loadingAllBooksForPage(this.currentPageNumber);
-      }
-    }
-  }, {
-    key: "checkAuth",
-    value: function checkAuth() {
       var _this2 = this;
 
       fetch("/api/login", {
@@ -41825,6 +41814,12 @@ var App = /*#__PURE__*/function (_React$Component) {
           bestBooks: _this2.state.bestBooks,
           pageWithBooks: _this2.state.pageWithBooks
         });
+      }).then(function (data) {
+        if (!_this2.state.isAuthorized) {
+          _this2.loadingBestBooks();
+        } else {
+          _this2.loadingAllBooksForPage(_this2.currentPageNumber);
+        }
       })["catch"](function (error) {
         if (_this2.state.isAuthorized) {
           _this2.setState({
@@ -41848,10 +41843,12 @@ var App = /*#__PURE__*/function (_React$Component) {
         method: 'GET',
         path: root + '/best_books'
       }).done(function (response) {
+        console.warn(response.entity);
+
         _this3.setState({
           isAuthorized: _this3.state.isAuthorized,
-          isFindBy: _this3.state.isFindBy,
-          findCaption: _this3.state.findCaption,
+          isFindBy: "",
+          findCaption: "",
           isFindText: _this3.state.isFindText,
           userName: _this3.state.userName,
           bestBooks: response.entity,
@@ -41870,8 +41867,8 @@ var App = /*#__PURE__*/function (_React$Component) {
       }).done(function (response) {
         _this4.setState({
           isAuthorized: _this4.state.isAuthorized,
-          isFindBy: _this4.state.isFindBy,
-          findCaption: _this4.state.findCaption,
+          isFindBy: "",
+          findCaption: "",
           isFindText: _this4.state.isFindText,
           userName: _this4.state.userName,
           bestBooks: _this4.state.bestBooks,
@@ -41964,7 +41961,8 @@ var App = /*#__PURE__*/function (_React$Component) {
       }).done(function (response) {
         _this8.setState({
           isAuthorized: _this8.state.isAuthorized,
-          isFindBy: _this8.state.isFindBy,
+          isFindBy: "name",
+          findCaption: "Результат поиска по Имени: '" + name + "'",
           userName: _this8.state.userName,
           bestBooks: _this8.state.bestBooks,
           pageWithBooks: response.entity
@@ -41983,7 +41981,8 @@ var App = /*#__PURE__*/function (_React$Component) {
       }).done(function (response) {
         _this9.setState({
           isAuthorized: _this9.state.isAuthorized,
-          isFindBy: _this9.state.isFindBy,
+          isFindBy: "author",
+          findCaption: "Результат поиска по Автору: '" + name + "'",
           userName: _this9.state.userName,
           bestBooks: _this9.state.bestBooks,
           pageWithBooks: response.entity
@@ -42002,7 +42001,8 @@ var App = /*#__PURE__*/function (_React$Component) {
       }).done(function (response) {
         _this10.setState({
           isAuthorized: _this10.state.isAuthorized,
-          isFindBy: _this10.state.isFindBy,
+          isFindBy: "genre",
+          findCaption: "Результат поиска по Жанру: '" + name + "'",
           userName: _this10.state.userName,
           bestBooks: _this10.state.bestBooks,
           pageWithBooks: response.entity
@@ -42026,7 +42026,7 @@ var App = /*#__PURE__*/function (_React$Component) {
     value: function render() {
       if (!this.state.isAuthorized) {
         return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(_auth_auth__WEBPACK_IMPORTED_MODULE_0__["RequestAuthForm"], null), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement(_books_best_books_js__WEBPACK_IMPORTED_MODULE_1__["BestBooks"], {
-          books: this.state.pageWithBooks
+          books: this.state.bestBooks
         }));
       } else {
         return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(_auth_auth__WEBPACK_IMPORTED_MODULE_0__["SucceededAuthForm"], {
@@ -42207,6 +42207,8 @@ var BestBooks = /*#__PURE__*/function (_React$Component) {
   _createClass(BestBooks, [{
     key: "render",
     value: function render() {
+      console.warn("BEST");
+      console.warn(this.props.books);
       return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h2", null, "\u041B\u0443\u0447\u0448\u0438\u0435 \u043A\u043D\u0438\u0433\u0438 \u043F\u0440\u0435\u0434\u0441\u0442\u0430\u0432\u043B\u0435\u043D\u043D\u044B\u0435 \u0432 \u043D\u0430\u0448\u0435\u0439 \u0431\u0438\u043B\u0438\u043E\u0442\u0435\u043A\u0435:"), /*#__PURE__*/React.createElement(BookInfoList, {
         books: this.props.books
       }));
@@ -42352,6 +42354,7 @@ var EditableBooksList = /*#__PURE__*/function (_React$Component) {
       var dataType = [];
 
       if (this.props.findCaption !== "") {
+        dataType.push( /*#__PURE__*/React.createElement("br", null));
         dataType.push( /*#__PURE__*/React.createElement("b", {
           key: "keyCaption"
         }, this.props.findCaption));

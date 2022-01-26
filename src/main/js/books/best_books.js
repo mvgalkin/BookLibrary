@@ -2,6 +2,8 @@ const React = require("react");
 
 export class BestBooks extends React.Component{
     render() {
+        console.warn("BEST")
+        console.warn(this.props.books)
         return (
             <div>
                 <h2>Лучшие книги представленные в нашей билиотеке:</h2>

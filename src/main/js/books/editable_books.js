@@ -17,6 +17,7 @@ export class EditableBooksList extends React.Component{
         const content = this.props.pageWithBooks.content
         const dataType=[];
         if (this.props.findCaption!==""){
+            dataType.push(<br/>)
             dataType.push(<b key={"keyCaption"}>{this.props.findCaption}</b>);
             dataType.push(<input key={"keyClose"} type="button" value="Отменить поиск" onClick={this.props.onCloseFind}/>)
         }
