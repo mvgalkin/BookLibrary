@@ -3,7 +3,6 @@ package org.mvgalkin.models;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -11,7 +10,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@Entity
+@Entity()
 @Table(name = "authors")
 public class Author {
     @Id

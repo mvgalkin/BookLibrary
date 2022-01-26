@@ -1,5 +1,5 @@
 package org.mvgalkin.dao;
-
+/*
 import org.mvgalkin.models.Book;
 import org.mvgalkin.models.BookInfoView;
 import org.springframework.data.domain.Page;
@@ -13,4 +13,4 @@ public interface BooksDaoRepository extends PagingAndSortingRepository<Book, Lon
     Page<BookInfoView> findByNameLikeIgnoreCase(String partOfName, Pageable pageable);
     Page<BookInfoView> findByAuthors_NameLikeIgnoreCase(String authors_name, Pageable pageable);
     Page<BookInfoView> findByGenres_NameLikeIgnoreCase(String genres_name, Pageable pageable);
-}
+}*/

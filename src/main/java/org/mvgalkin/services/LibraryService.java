@@ -4,9 +4,11 @@ import org.mvgalkin.models.Book;
 import org.mvgalkin.models.BookInfoView;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface LibraryService {
+    /*
     Iterable<BookInfoView> getBestBooks(Integer limit);
     Page<BookInfoView> getBooksByPage(Integer pageNumber, Integer pageSize);
     Optional<BookInfoView> getBookInfoView(long id);
@@ -16,6 +18,13 @@ public interface LibraryService {
     Page<BookInfoView> findBooksByName(String partOfName, Integer pageNumber, Integer pageSize);
     Page<BookInfoView> findBooksByAuthorName(String name, Integer pageNumber, Integer pageSize);
     Page<BookInfoView> findBooksByGenre(String genre, Integer pageNumber, Integer pageSize);
+
+     */
+
+    List<Book> getAll();
+    List<Book> findBooksByName(String partOfName);
+    List<Book> findBooksByAuthor(String name);
+    List<Book> findBooksByGenre(String name);
 
     Book save(Book book);
     void update(long id, Book book);

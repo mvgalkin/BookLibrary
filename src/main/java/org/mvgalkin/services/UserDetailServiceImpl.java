@@ -1,5 +1,5 @@
 package org.mvgalkin.services;
-
+/*
 import org.mvgalkin.dao.UsersRepository;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;
@@ -23,3 +23,4 @@ public class UserDetailServiceImpl implements UserDetailsService {
         return new User(user.getName(), user.getPassword(), AuthorityUtils.createAuthorityList(user.getRole()));
     }
 }
+*/

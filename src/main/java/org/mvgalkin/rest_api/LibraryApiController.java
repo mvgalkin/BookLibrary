@@ -12,6 +12,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController()
 @RequestMapping("/api")
@@ -23,6 +25,55 @@ public class LibraryApiController {
         this.libraryService = libraryService;
     }
 
+    @GetMapping("/books")
+    public @ResponseBody
+    ResponseEntity<List<Book>> getAll(){
+        //запуск БЛ
+        return ResponseEntity.ok().body(libraryService.getAll());
+    }
+
+    @GetMapping("/books/find/name/{name}")
+    public @ResponseBody
+    ResponseEntity<List<Book>> findBooksByName(
+            @PathVariable(value = "name") String name
+    ){
+        //контроль входных параметров (требований нет, поэтому проверка чисто на адекватность)
+        if (name == null || name.isBlank()) {
+            return ResponseEntity.ok().build();
+        }
+
+        //запуск БЛ
+        return ResponseEntity.ok().body(libraryService.findBooksByName(name));
+    }
+
+    @GetMapping("/books/find/author/{name}")
+    public @ResponseBody
+    ResponseEntity<List<Book>> findBooksByAuthor(
+            @PathVariable(value = "name") String name
+    ){
+        //контроль входных параметров (требований нет, поэтому проверка чисто на адекватность)
+        if (name == null || name.isBlank()) {
+            return ResponseEntity.ok().build();
+        }
+
+        //запуск БЛ
+        return ResponseEntity.ok().body(libraryService.findBooksByAuthor(name));
+    }
+
+    @GetMapping("/books/find/genre/{name}")
+    public @ResponseBody
+    ResponseEntity<List<Book>> findBooksByGenre(
+            @PathVariable(value = "name") String name
+    ){
+        //контроль входных параметров (требований нет, поэтому проверка чисто на адекватность)
+        if (name == null || name.isBlank()) {
+            return ResponseEntity.ok().build();
+        }
+
+        //запуск БЛ
+        return ResponseEntity.ok().body(libraryService.findBooksByGenre(name));
+    }
+/*
     @GetMapping("/best_books")
     public @ResponseBody
     Iterable<BookInfoView> getBestBooks(
@@ -186,5 +237,6 @@ public class LibraryApiController {
         }
         return ResponseEntity.ok().body("Anonymous");
     }
-}
 
+ */
+}

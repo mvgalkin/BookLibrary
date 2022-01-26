@@ -1,5 +1,6 @@
 package org.mvgalkin.services;
 
+/*
 import org.mvgalkin.dao.AuthorsDaoRepository;
 import org.mvgalkin.dao.BooksDaoRepository;
 import org.mvgalkin.dao.GenresDaoRepository;
@@ -12,13 +13,66 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+*/
+import org.mvgalkin.dao.BookDao;
+import org.mvgalkin.models.Book;
+import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.*;
 
 @Service
 @Transactional
 public class LibraryServiceImpl implements LibraryService {
+    private BookDao booksRepository;
 
+    public LibraryServiceImpl(BookDao booksRepository) {
+
+        this.booksRepository = booksRepository;
+    }
+
+    @Override
+    public List<Book> getAll() {
+        return booksRepository.getAll();
+    }
+
+    @Override
+    public List<Book> findBooksByName(String partOfName) {
+        return booksRepository.findByName("%"+partOfName+"%");
+    }
+
+    @Override
+    public List<Book> findBooksByAuthor(String name) {
+        return booksRepository.findByAuthor("%"+name+"%");
+    }
+
+    @Override
+    public List<Book> findBooksByGenre(String name) {
+        return booksRepository.findByGenre("%"+name+"%");
+    }
+
+    @Override
+    public Book save(Book book) {
+        return booksRepository.save(book);
+    }
+
+    @Override
+    public void update(long id, Book book) {
+        booksRepository.update(id, book);
+    }
+
+    @Override
+    public void delete(long id) {
+        booksRepository.deleteById(id);
+    }
+
+    @Override
+    public boolean isExists(long id) {
+        return false;
+    }
+
+
+    /*
     private final BooksDaoRepository booksRepository;
     private final AuthorsDaoRepository authorsRepository;
     private final GenresDaoRepository genresRepository;
@@ -138,4 +192,6 @@ public class LibraryServiceImpl implements LibraryService {
     public boolean isExists(long id) {
         return booksRepository.existsById(id);
     }
+
+ */
 }
