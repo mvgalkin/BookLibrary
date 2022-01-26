@@ -22,9 +22,11 @@ public interface LibraryService {
      */
 
     List<Book> getAll();
+    /*
     List<Book> findBooksByName(String partOfName);
     List<Book> findBooksByAuthor(String name);
     List<Book> findBooksByGenre(String name);
+     */
 
     Book save(Book book);
     void update(long id, Book book);

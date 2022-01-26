@@ -15,42 +15,43 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 */
 import org.mvgalkin.dao.BookDao;
+import org.mvgalkin.dao.BooksRepository;
 import org.mvgalkin.models.Book;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.util.*;
 
 @Service
-@Transactional
 public class LibraryServiceImpl implements LibraryService {
-    private BookDao booksRepository;
+    private BooksRepository booksRepository;
 
-    public LibraryServiceImpl(BookDao booksRepository) {
+    public LibraryServiceImpl(BooksRepository booksRepository) {
 
         this.booksRepository = booksRepository;
     }
 
     @Override
     public List<Book> getAll() {
-        return booksRepository.getAll();
+        List<Book> result = new ArrayList<Book>();
+        booksRepository.findAll().forEach(result::add);
+        return result;
     }
-
+/*
     @Override
-    public List<Book> findBooksByName(String partOfName) {
+    public Iterable<Book> findBooksByName(String partOfName) {
         return booksRepository.findByName("%"+partOfName+"%");
     }
 
     @Override
-    public List<Book> findBooksByAuthor(String name) {
+    public Iterable<Book> findBooksByAuthor(String name) {
         return booksRepository.findByAuthor("%"+name+"%");
     }
 
     @Override
-    public List<Book> findBooksByGenre(String name) {
+    public Iterable<Book> findBooksByGenre(String name) {
         return booksRepository.findByGenre("%"+name+"%");
     }
-
+*/
     @Override
     public Book save(Book book) {
         return booksRepository.save(book);
@@ -58,7 +59,7 @@ public class LibraryServiceImpl implements LibraryService {
 
     @Override
     public void update(long id, Book book) {
-        booksRepository.update(id, book);
+        booksRepository.save(book);
     }
 
     @Override
@@ -68,7 +69,7 @@ public class LibraryServiceImpl implements LibraryService {
 
     @Override
     public boolean isExists(long id) {
-        return false;
+        return booksRepository.existsById(id);
     }
 
 

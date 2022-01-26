@@ -1,5 +1,7 @@
 spring:
   liquibase:
     enabled: true
-postgres:
-  driver="org.postgresql.Driver"
+  datasource:
+    url: jdbc:postgresql://maksim-VM-SQL:5432/book_library_db
+    username: postgres
+    password: 123

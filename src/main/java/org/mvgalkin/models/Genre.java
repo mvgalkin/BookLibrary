@@ -1,21 +1,15 @@
 package org.mvgalkin.models;
 
-import lombok.*;
 
-import javax.persistence.*;
-import java.util.Set;
+import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
-@Getter
-@Setter
-@EqualsAndHashCode
-@AllArgsConstructor
-@NoArgsConstructor
-@ToString
-@Entity
-@Table(name = "genres")
+
+@Table("genres")
+@Data
 public class Genre {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;

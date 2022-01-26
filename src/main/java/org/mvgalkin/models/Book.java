@@ -1,42 +1,39 @@
 package org.mvgalkin.models;
 
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.MappedCollection;
+import org.springframework.data.relational.core.mapping.Table;
 
-import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@ToString
-@Entity
-@Table(name = "books")
+@Table("books")
+@Data
 public class Book implements BookInfoView {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     private String name;
 
-    @Lob
+/*
     private byte[] cover;
 
-    @Lob
     private byte[] content;
+ */
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "books_authors",
-            joinColumns = @JoinColumn(name = "book_id"),
-            inverseJoinColumns = @JoinColumn(name = "author_id"))
-    private Set<Author> authors;
+    @MappedCollection(idColumn = "book_id")
+    private Set<AuthorRef> authors = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "books_genres",
-            joinColumns = @JoinColumn(name = "book_id"),
-            inverseJoinColumns = @JoinColumn(name = "genre_id"))
-    private Set<Genre> genres;
+    public void addAuthor(AuthorRef author) {
+        authors.add(new AuthorRef(author.getAuthorId()));
+    }
+
+    @MappedCollection(idColumn = "book_id")
+    private Set<GenreRef> genres = new HashSet<>();
+
+    public void addGenre(GenreRef genre) {
+        genres.add(new GenreRef(genre.getGenreId()));
+    }
 }

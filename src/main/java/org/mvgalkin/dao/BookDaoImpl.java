@@ -1,90 +1,95 @@
 package org.mvgalkin.dao;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.mvgalkin.models.Book;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.TypedQuery;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 @Repository
 public class BookDaoImpl implements BookDao{
 
-    @Autowired
-    private SessionFactory sessionFactory;
+    private DataSource dataSource;
+
+    public void BookDaoImpl(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 
     @Override
     public List<Book> getAll() {
-        @SuppressWarnings("unchecked")
-        TypedQuery<Book> query = sessionFactory.getCurrentSession().createQuery("from Book fetch all properties ");
-        return query.getResultList();
+        /*
+        String query = "select * from books b inner join books_authors ba on b.id=ba.book_id inner join authors a on ba.author_id=a.id inner join books_genres bg on b.id=bg.book_id inner join genres g on bg.genre_id=g.id";
+        List<Book> bookList = new ArrayList<Book>();
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try{
+            con = dataSource.getConnection();
+            ps = con.prepareStatement(query);
+            rs = ps.executeQuery();
+            Book book = new Book();
+            Long prevId = -1L;
+            while(rs.next()){
+                book.setId(rs.getLong("id"));
+                book.setName(rs.getString("name"));
+                book.setCover(rs.getBytes("cover"));
+                book.setContent(rs.getBytes("content"));
+                book.setGenres();
+                bookList.add(book);
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }finally{
+            try {
+                rs.close();
+                ps.close();
+                con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return bookList;
+         */
+        return null;
     }
 
     @Override
     public List<Book> findByName(String name) {
-        @SuppressWarnings("unchecked")
-        TypedQuery<Book> query = sessionFactory.getCurrentSession().createQuery("from Book fetch all properties where upper(name) like :name");
-        query.setParameter("name", name.toUpperCase());
-        return query.getResultList();
+        return null;
     }
 
     @Override
     public List<Book> findByAuthor(String name) {
-        @SuppressWarnings("unchecked")
-        TypedQuery<Book> query = sessionFactory.getCurrentSession().createQuery("select b from Book as b inner join b.authors as a inner join b.genres as g where upper(a.name) like :name");
-        query.setParameter("name", name.toUpperCase());
-        return query.getResultList();
+        return null;
     }
 
     @Override
     public List<Book> findByGenre(String name) {
-        @SuppressWarnings("unchecked")
-        TypedQuery<Book> query = sessionFactory.getCurrentSession().createQuery("from Book b inner join b.authors a join b.genres g where upper(g.name) like :name");
-        query.setParameter("name", name.toUpperCase());
-        return query.getResultList();
-    }
-
-    public Book getById(Long id){
-        return sessionFactory.getCurrentSession().get(Book.class, id);
+        return null;
     }
 
     @Override
     public Book save(Book book) {
-        sessionFactory.getCurrentSession().beginTransaction();
-        sessionFactory.getCurrentSession().save(book);
-        sessionFactory.getCurrentSession().getTransaction().commit();
-        return book;
+        return null;
     }
 
     @Override
     public void update(long id, Book book) {
-        Session session = sessionFactory.getCurrentSession();
-        session.beginTransaction();
-        Book book2 = session.byId(Book.class).load(id);
-        book2.setName(book.getName());
-        book2.setCover(book.getCover());
-        book2.setContent(book.getContent());
-        //todo: по идее можно добавить логику обновления авторов ... но для этого надо сопоставить до и после ... и выделить тех которые удаляются и тех которые добавляются
-        session.flush();
-        session.getTransaction().commit();
+
     }
 
     @Override
     public void deleteById(Long id) {
-        Session session = sessionFactory.getCurrentSession();
-        session.beginTransaction();
-        Book book = session.byId(Book.class).load(id);
-        session.delete(book);
-        session.getTransaction().commit();
+
     }
 
     @Override
     public boolean existsById(Long id) {
-        Session session = sessionFactory.getCurrentSession();
-        Book book = session.byId(Book.class).load(id);
-        return book != null;
+        return false;
     }
 }

@@ -31,7 +31,7 @@ public class LibraryApiController {
         //запуск БЛ
         return ResponseEntity.ok().body(libraryService.getAll());
     }
-
+/*
     @GetMapping("/books/find/name/{name}")
     public @ResponseBody
     ResponseEntity<List<Book>> findBooksByName(
@@ -73,6 +73,8 @@ public class LibraryApiController {
         //запуск БЛ
         return ResponseEntity.ok().body(libraryService.findBooksByGenre(name));
     }
+
+ */
 /*
     @GetMapping("/best_books")
     public @ResponseBody
