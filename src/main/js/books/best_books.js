@@ -13,9 +13,13 @@ export class BestBooks extends React.Component{
 
 class BookInfoList extends React.Component{
     render() {
-        const books = this.props.books.map(book =>
-            <BookInfo key={book.name} books={book}/>
-        );
+        var books = [];
+        if (this.props.books.length>0) {
+            books = this.props.books.map(book =>
+                <BookInfo key={book.name} books={book}/>
+            );
+        } 
+
         return (
             <table className="books">
                 <tbody>

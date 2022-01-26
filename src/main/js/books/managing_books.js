@@ -82,8 +82,6 @@ export class AddDialog extends React.Component {
             })
         }
 
-        console.warn(book);
-
         this.props.onAdd(book);
 
         ReactDOM.findDOMNode(this.refs["book_name"]).value="";
@@ -212,8 +210,6 @@ export class EditDialog extends React.Component {
                 name: ReactDOM.findDOMNode(this.refs["'genre_name"+j+"'"]).value.trim()
             })
         }
-
-        console.warn(book);
 
         this.props.onEdit(book);
 

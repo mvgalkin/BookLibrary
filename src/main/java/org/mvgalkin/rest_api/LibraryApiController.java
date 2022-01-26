@@ -6,6 +6,10 @@ import org.mvgalkin.services.LibraryService;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -171,6 +175,16 @@ public class LibraryApiController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/login")
+    public ResponseEntity<String> login(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!(authentication instanceof AnonymousAuthenticationToken)) {
+            String currentUserName = authentication.getName();
+            return ResponseEntity.ok().body(currentUserName);
+        }
+        return ResponseEntity.ok().body("Anonymous");
     }
 }
 

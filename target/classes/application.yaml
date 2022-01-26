@@ -17,7 +17,3 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: validate
-  security:
-    user:
-      name: user
-      password: 123

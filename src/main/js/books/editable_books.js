@@ -1,4 +1,5 @@
 import {AddDialog,EditDialog} from "./managing_books";
+import ReactDOM from "react-dom";
 
 const React = require("react");
 
@@ -14,11 +15,22 @@ export class EditableBooksList extends React.Component{
             totalPages = 1
         }
         const content = this.props.pageWithBooks.content
-
+        const dataType=[];
+        if (this.props.findCaption!==""){
+            dataType.push(<b key={"keyCaption"}>{this.props.findCaption}</b>);
+            dataType.push(<input key={"keyClose"} type="button" value="Отменить поиск" onClick={this.props.onCloseFind}/>)
+        }
         return (
             <div>
                 <h2>Наша библиотека:</h2>
                 <form>
+                    <label>Поиск:</label>
+                    <input type="text" key={"keyFind"} ref="find" width="200px"/>
+                    <input type="button" key={"keyFindByName"} value="По Названию" onClick={(e)=>{this.props.findByName(e, ReactDOM.findDOMNode(this.refs["find"]).value.trim())}}/>
+                    <input type="button" key={"keyFindByAuthor"} value="По Автору" onClick={(e)=>{this.props.findByAuthor(e, ReactDOM.findDOMNode(this.refs["find"]).value.trim())}}/>
+                    <input type="button" key={"keyFindByGenre"} value="По Жанру" onClick={(e)=>{this.props.findByGenre(e, ReactDOM.findDOMNode(this.refs["find"]).value.trim())}}/>
+
+                    {dataType}
                     <div align="right">
                         <PagingInfo pageNumber={pageNumber}
                                     totalPages={totalPages}/>

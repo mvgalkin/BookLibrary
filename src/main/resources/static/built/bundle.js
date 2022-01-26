@@ -41745,7 +41745,11 @@ var App = /*#__PURE__*/function (_React$Component) {
 
     _this = _super.call(this, props);
     _this.state = {
-      isAuthorized: true,
+      isAuthorized: false,
+      isFindBy: "",
+      findCaption: "",
+      isFindText: "",
+      userName: "",
       bestBooks: [],
       pageWithBooks: {}
     };
@@ -41755,6 +41759,10 @@ var App = /*#__PURE__*/function (_React$Component) {
     _this.onDelete = _this.onDelete.bind(_assertThisInitialized(_this));
     _this.onDownload = _this.onDownload.bind(_assertThisInitialized(_this));
     _this.onView = _this.onView.bind(_assertThisInitialized(_this));
+    _this.findByName = _this.findByName.bind(_assertThisInitialized(_this));
+    _this.findByAuthor = _this.findByAuthor.bind(_assertThisInitialized(_this));
+    _this.findByGenre = _this.findByGenre.bind(_assertThisInitialized(_this));
+    _this.onCloseFind = _this.onCloseFind.bind(_assertThisInitialized(_this));
     _this.currentPageNumber = 0;
     return _this;
   }
@@ -41762,6 +41770,8 @@ var App = /*#__PURE__*/function (_React$Component) {
   _createClass(App, [{
     key: "componentDidMount",
     value: function componentDidMount() {
+      this.checkAuth();
+
       if (!this.state.isAuthorized) {
         this.loadingBestBooks();
       } else {
@@ -41769,33 +41779,102 @@ var App = /*#__PURE__*/function (_React$Component) {
       }
     }
   }, {
+    key: "checkAuth",
+    value: function checkAuth() {
+      var _this2 = this;
+
+      fetch("/api/login", {
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      }).then(function (response) {
+        if (response.status === 200) {
+          if (!_this2.state.isAuthorized) {
+            _this2.setState({
+              isAuthorized: true,
+              isFindBy: _this2.state.isFindBy,
+              findCaption: _this2.state.findCaption,
+              isFindText: _this2.state.isFindText,
+              userName: _this2.state.userName,
+              bestBooks: _this2.state.bestBooks,
+              pageWithBooks: _this2.state.pageWithBooks
+            });
+          }
+        } else {
+          if (_this2.state.isAuthorized) {
+            _this2.setState({
+              isAuthorized: false,
+              isFindBy: _this2.state.isFindBy,
+              findCaption: _this2.state.findCaption,
+              isFindText: _this2.state.isFindText,
+              userName: _this2.state.userName,
+              bestBooks: _this2.state.bestBooks,
+              pageWithBooks: _this2.state.pageWithBooks
+            });
+          }
+        }
+
+        return response.text();
+      }).then(function (data) {
+        _this2.setState({
+          isAuthorized: _this2.state.isAuthorized,
+          isFindBy: _this2.state.isFindBy,
+          findCaption: _this2.state.findCaption,
+          isFindText: _this2.state.isFindText,
+          userName: data,
+          bestBooks: _this2.state.bestBooks,
+          pageWithBooks: _this2.state.pageWithBooks
+        });
+      })["catch"](function (error) {
+        if (_this2.state.isAuthorized) {
+          _this2.setState({
+            isAuthorized: false,
+            isFindBy: _this2.state.isFindBy,
+            findCaption: _this2.state.findCaption,
+            isFindText: _this2.state.isFindText,
+            userName: _this2.state.userName,
+            bestBooks: _this2.state.bestBooks,
+            pageWithBooks: _this2.state.pageWithBooks
+          });
+        }
+      });
+    }
+  }, {
     key: "loadingBestBooks",
     value: function loadingBestBooks() {
-      var _this2 = this;
+      var _this3 = this;
 
       client({
         method: 'GET',
         path: root + '/best_books'
       }).done(function (response) {
-        _this2.setState({
-          isAuthorized: _this2.state.isAuthorized,
+        _this3.setState({
+          isAuthorized: _this3.state.isAuthorized,
+          isFindBy: _this3.state.isFindBy,
+          findCaption: _this3.state.findCaption,
+          isFindText: _this3.state.isFindText,
+          userName: _this3.state.userName,
           bestBooks: response.entity,
-          pageWithBooks: _this2.state.pageWithBooks
+          pageWithBooks: _this3.state.pageWithBooks
         });
       });
     }
   }, {
     key: "loadingAllBooksForPage",
     value: function loadingAllBooksForPage(pageNumber) {
-      var _this3 = this;
+      var _this4 = this;
 
       client({
         method: 'GET',
         path: root + '/books?pagenumber=' + pageNumber
       }).done(function (response) {
-        _this3.setState({
-          isAuthorized: _this3.state.isAuthorized,
-          bestBooks: _this3.state.bestBooks,
+        _this4.setState({
+          isAuthorized: _this4.state.isAuthorized,
+          isFindBy: _this4.state.isFindBy,
+          findCaption: _this4.state.findCaption,
+          isFindText: _this4.state.isFindText,
+          userName: _this4.state.userName,
+          bestBooks: _this4.state.bestBooks,
           pageWithBooks: response.entity
         });
       });
@@ -41803,7 +41882,7 @@ var App = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "onAdd",
     value: function onAdd(book) {
-      var _this4 = this;
+      var _this5 = this;
 
       client({
         method: 'POST',
@@ -41813,7 +41892,7 @@ var App = /*#__PURE__*/function (_React$Component) {
           'Content-Type': 'application/json'
         }
       }).done(function (response) {
-        _this4.loadingAllBooksForPage(_this4.currentPageNumber);
+        _this5.loadingAllBooksForPage(_this5.currentPageNumber);
       });
     }
   }, {
@@ -41831,20 +41910,20 @@ var App = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "onDelete",
     value: function onDelete(e, id) {
-      var _this5 = this;
+      var _this6 = this;
 
       e.preventDefault();
       client({
         method: 'DELETE',
         path: root + '/books/' + id
       }).done(function (response) {
-        _this5.loadingAllBooksForPage(_this5.currentPageNumber);
+        _this6.loadingAllBooksForPage(_this6.currentPageNumber);
       });
     }
   }, {
     key: "onEdit",
     value: function onEdit(book) {
-      var _this6 = this;
+      var _this7 = this;
 
       client({
         method: 'PUT',
@@ -41854,7 +41933,7 @@ var App = /*#__PURE__*/function (_React$Component) {
           'Content-Type': 'application/json'
         }
       }).done(function (response) {
-        _this6.loadingAllBooksForPage(_this6.currentPageNumber);
+        _this7.loadingAllBooksForPage(_this7.currentPageNumber);
       });
     }
   }, {
@@ -41862,7 +41941,85 @@ var App = /*#__PURE__*/function (_React$Component) {
     value: function onNavigateToPage(e, pageNumber) {
       e.preventDefault();
       this.currentPageNumber = pageNumber;
-      this.loadingAllBooksForPage(pageNumber);
+
+      if (this.state.isFindBy === "") {
+        this.loadingAllBooksForPage(pageNumber);
+      } else if (this.state.isFindBy === "author") {
+        this.findByAuthor(e, this.state.isFindText);
+      } else if (this.state.isFindBy === "genre") {
+        this.findByGenre(e, this.state.isFindText);
+      } else {
+        this.findByName(e, this.state.isFindText);
+      }
+    }
+  }, {
+    key: "findByName",
+    value: function findByName(e, name) {
+      var _this8 = this;
+
+      e.preventDefault();
+      client({
+        method: 'GET',
+        path: root + '/books/find/name/' + name + '?pagenumber=' + this.currentPageNumber
+      }).done(function (response) {
+        _this8.setState({
+          isAuthorized: _this8.state.isAuthorized,
+          isFindBy: _this8.state.isFindBy,
+          userName: _this8.state.userName,
+          bestBooks: _this8.state.bestBooks,
+          pageWithBooks: response.entity
+        });
+      });
+    }
+  }, {
+    key: "findByAuthor",
+    value: function findByAuthor(e, name) {
+      var _this9 = this;
+
+      e.preventDefault();
+      client({
+        method: 'GET',
+        path: root + '/books/find/author/' + name + '?pagenumber=' + this.currentPageNumber
+      }).done(function (response) {
+        _this9.setState({
+          isAuthorized: _this9.state.isAuthorized,
+          isFindBy: _this9.state.isFindBy,
+          userName: _this9.state.userName,
+          bestBooks: _this9.state.bestBooks,
+          pageWithBooks: response.entity
+        });
+      });
+    }
+  }, {
+    key: "findByGenre",
+    value: function findByGenre(e, name) {
+      var _this10 = this;
+
+      e.preventDefault();
+      client({
+        method: 'GET',
+        path: root + '/books/genre/name/' + name + '?pagenumber=' + this.currentPageNumber
+      }).done(function (response) {
+        _this10.setState({
+          isAuthorized: _this10.state.isAuthorized,
+          isFindBy: _this10.state.isFindBy,
+          userName: _this10.state.userName,
+          bestBooks: _this10.state.bestBooks,
+          pageWithBooks: response.entity
+        });
+      });
+    }
+  }, {
+    key: "onCloseFind",
+    value: function onCloseFind(e) {
+      e.preventDefault();
+      this.setState({
+        isAuthorized: this.state.isAuthorized,
+        isFindBy: this.state.isFindBy,
+        userName: this.state.userName,
+        bestBooks: this.state.bestBooks,
+        pageWithBooks: this.state.pageWithBooks
+      });
     }
   }, {
     key: "render",
@@ -41872,8 +42029,15 @@ var App = /*#__PURE__*/function (_React$Component) {
           books: this.state.pageWithBooks
         }));
       } else {
-        return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(_auth_auth__WEBPACK_IMPORTED_MODULE_0__["SucceededAuthForm"], null), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement(_books_editable_books_js__WEBPACK_IMPORTED_MODULE_2__["EditableBooksList"], {
+        return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(_auth_auth__WEBPACK_IMPORTED_MODULE_0__["SucceededAuthForm"], {
+          userName: this.state.userName
+        }), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement(_books_editable_books_js__WEBPACK_IMPORTED_MODULE_2__["EditableBooksList"], {
           pageWithBooks: this.state.pageWithBooks,
+          findCaption: this.state.findCaption,
+          findByName: this.findByName,
+          findByAuthor: this.findByAuthor,
+          findByGenre: this.findByGenre,
+          onCloseFind: this.onCloseFind,
           onAdd: this.onAdd,
           onView: this.onView,
           onDownload: this.onDownload,
@@ -41943,7 +42107,13 @@ var SucceededAuthForm = /*#__PURE__*/function (_React$Component) {
     value: function render() {
       return /*#__PURE__*/React.createElement("div", {
         id: "authform"
-      }, /*#__PURE__*/React.createElement("h1", null, "\u0414\u043E\u0431\u0440\u043E \u043F\u043E\u0436\u0430\u043B\u043E\u0432\u0430\u0442\u044C, ", this.props.name, "!"));
+      }, /*#__PURE__*/React.createElement("form", {
+        action: "/logout",
+        method: "POST"
+      }, /*#__PURE__*/React.createElement("h1", null, "\u0414\u043E\u0431\u0440\u043E \u043F\u043E\u0436\u0430\u043B\u043E\u0432\u0430\u0442\u044C, ", this.props.userName, "!"), /*#__PURE__*/React.createElement("input", {
+        type: "submit",
+        value: "Выйти"
+      })));
     }
   }]);
 
@@ -41965,7 +42135,10 @@ var RequestAuthForm = /*#__PURE__*/function (_React$Component2) {
     value: function render() {
       return /*#__PURE__*/React.createElement("div", {
         id: "authform"
-      }, /*#__PURE__*/React.createElement("form", null, /*#__PURE__*/React.createElement("h1", null, "\u0414\u043E\u0431\u0440\u043E \u043F\u043E\u0436\u0430\u043B\u043E\u0432\u0430\u0442\u044C, \u043F\u043E\u0436\u0430\u043B\u0443\u0439\u0441\u0442\u0430 \u0430\u0432\u0442\u043E\u0440\u0438\u0437\u0443\u0439\u0442\u0435\u0441\u044C"), /*#__PURE__*/React.createElement("table", null, /*#__PURE__*/React.createElement("tbody", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "\u0418\u043C\u044F \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F"), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("input", {
+      }, /*#__PURE__*/React.createElement("form", {
+        action: "/login",
+        method: "POST"
+      }, /*#__PURE__*/React.createElement("h1", null, "\u0414\u043E\u0431\u0440\u043E \u043F\u043E\u0436\u0430\u043B\u043E\u0432\u0430\u0442\u044C, \u043F\u043E\u0436\u0430\u043B\u0443\u0439\u0441\u0442\u0430 \u0430\u0432\u0442\u043E\u0440\u0438\u0437\u0443\u0439\u0442\u0435\u0441\u044C"), /*#__PURE__*/React.createElement("table", null, /*#__PURE__*/React.createElement("tbody", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "\u0418\u043C\u044F \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F"), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("input", {
         type: "text",
         id: "username",
         name: "username"
@@ -42057,12 +42230,17 @@ var BookInfoList = /*#__PURE__*/function (_React$Component2) {
   _createClass(BookInfoList, [{
     key: "render",
     value: function render() {
-      var books = this.props.books.map(function (book) {
-        return /*#__PURE__*/React.createElement(BookInfo, {
-          key: book.name,
-          books: book
+      var books = [];
+
+      if (this.props.books.length > 0) {
+        books = this.props.books.map(function (book) {
+          return /*#__PURE__*/React.createElement(BookInfo, {
+            key: book.name,
+            books: book
+          });
         });
-      });
+      }
+
       return /*#__PURE__*/React.createElement("table", {
         className: "books"
       }, /*#__PURE__*/React.createElement("tbody", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "\u041D\u0430\u0437\u0432\u0430\u043D\u0438\u0435"), /*#__PURE__*/React.createElement("th", null, "\u041E\u0431\u043B\u043E\u0436\u043A\u0430"), /*#__PURE__*/React.createElement("th", null, "\u0410\u0432\u0442\u043E\u0440\u044B"), /*#__PURE__*/React.createElement("th", null, "\u0416\u0430\u043D\u0440")), books));
@@ -42110,6 +42288,8 @@ var BookInfo = /*#__PURE__*/function (_React$Component3) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EditableBooksList", function() { return EditableBooksList; });
 /* harmony import */ var _managing_books__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./managing_books */ "./src/main/js/books/managing_books.js");
+/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
+/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_dom__WEBPACK_IMPORTED_MODULE_1__);
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -42134,6 +42314,7 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 
 
 
+
 var React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 var EditableBooksList = /*#__PURE__*/function (_React$Component) {
@@ -42150,7 +42331,10 @@ var EditableBooksList = /*#__PURE__*/function (_React$Component) {
   _createClass(EditableBooksList, [{
     key: "render",
     value: function render() {
-      var _this$props$pageWithB, _this$props$pageWithB2, _this$props$pageWithB3;
+      var _this$props$pageWithB,
+          _this$props$pageWithB2,
+          _this$props$pageWithB3,
+          _this = this;
 
       var pageNumber = (_this$props$pageWithB = this.props.pageWithBooks) === null || _this$props$pageWithB === void 0 ? void 0 : (_this$props$pageWithB2 = _this$props$pageWithB.pageable) === null || _this$props$pageWithB2 === void 0 ? void 0 : _this$props$pageWithB2.pageNumber;
 
@@ -42165,7 +42349,47 @@ var EditableBooksList = /*#__PURE__*/function (_React$Component) {
       }
 
       var content = this.props.pageWithBooks.content;
-      return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h2", null, "\u041D\u0430\u0448\u0430 \u0431\u0438\u0431\u043B\u0438\u043E\u0442\u0435\u043A\u0430:"), /*#__PURE__*/React.createElement("form", null, /*#__PURE__*/React.createElement("div", {
+      var dataType = [];
+
+      if (this.props.findCaption !== "") {
+        dataType.push( /*#__PURE__*/React.createElement("b", {
+          key: "keyCaption"
+        }, this.props.findCaption));
+        dataType.push( /*#__PURE__*/React.createElement("input", {
+          key: "keyClose",
+          type: "button",
+          value: "\u041E\u0442\u043C\u0435\u043D\u0438\u0442\u044C \u043F\u043E\u0438\u0441\u043A",
+          onClick: this.props.onCloseFind
+        }));
+      }
+
+      return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h2", null, "\u041D\u0430\u0448\u0430 \u0431\u0438\u0431\u043B\u0438\u043E\u0442\u0435\u043A\u0430:"), /*#__PURE__*/React.createElement("form", null, /*#__PURE__*/React.createElement("label", null, "\u041F\u043E\u0438\u0441\u043A:"), /*#__PURE__*/React.createElement("input", {
+        type: "text",
+        key: "keyFind",
+        ref: "find",
+        width: "200px"
+      }), /*#__PURE__*/React.createElement("input", {
+        type: "button",
+        key: "keyFindByName",
+        value: "\u041F\u043E \u041D\u0430\u0437\u0432\u0430\u043D\u0438\u044E",
+        onClick: function onClick(e) {
+          _this.props.findByName(e, react_dom__WEBPACK_IMPORTED_MODULE_1___default.a.findDOMNode(_this.refs["find"]).value.trim());
+        }
+      }), /*#__PURE__*/React.createElement("input", {
+        type: "button",
+        key: "keyFindByAuthor",
+        value: "\u041F\u043E \u0410\u0432\u0442\u043E\u0440\u0443",
+        onClick: function onClick(e) {
+          _this.props.findByAuthor(e, react_dom__WEBPACK_IMPORTED_MODULE_1___default.a.findDOMNode(_this.refs["find"]).value.trim());
+        }
+      }), /*#__PURE__*/React.createElement("input", {
+        type: "button",
+        key: "keyFindByGenre",
+        value: "\u041F\u043E \u0416\u0430\u043D\u0440\u0443",
+        onClick: function onClick(e) {
+          _this.props.findByGenre(e, react_dom__WEBPACK_IMPORTED_MODULE_1___default.a.findDOMNode(_this.refs["find"]).value.trim());
+        }
+      }), dataType, /*#__PURE__*/React.createElement("div", {
         align: "right"
       }, /*#__PURE__*/React.createElement(PagingInfo, {
         pageNumber: pageNumber,
@@ -42260,7 +42484,7 @@ var Page = /*#__PURE__*/function (_React$Component4) {
   _createClass(Page, [{
     key: "render",
     value: function render() {
-      var _this = this;
+      var _this2 = this;
 
       if (this.props.is_current_page) {
         return /*#__PURE__*/React.createElement("b", null, this.props.number);
@@ -42268,7 +42492,7 @@ var Page = /*#__PURE__*/function (_React$Component4) {
         return /*#__PURE__*/React.createElement("a", {
           href: "",
           onClick: function onClick(e) {
-            _this.props.onNavigateToPage(e, _this.props.number);
+            _this2.props.onNavigateToPage(e, _this2.props.number);
           }
         }, this.props.number);
       }
@@ -42292,7 +42516,7 @@ var BookInfoList = /*#__PURE__*/function (_React$Component5) {
   _createClass(BookInfoList, [{
     key: "render",
     value: function render() {
-      var _this2 = this;
+      var _this3 = this;
 
       if (this.props.books === undefined) {
         return /*#__PURE__*/React.createElement("table", {
@@ -42305,10 +42529,10 @@ var BookInfoList = /*#__PURE__*/function (_React$Component5) {
           return /*#__PURE__*/React.createElement(BookInfo, {
             key: book.name,
             book: book,
-            onView: _this2.props.onView,
-            onDownload: _this2.props.onDownload,
-            onEdit: _this2.props.onEdit,
-            onDelete: _this2.props.onDelete
+            onView: _this3.props.onView,
+            onDownload: _this3.props.onDownload,
+            onEdit: _this3.props.onEdit,
+            onDelete: _this3.props.onDelete
           });
         });
         return /*#__PURE__*/React.createElement("table", {
@@ -42335,7 +42559,7 @@ var BookInfo = /*#__PURE__*/function (_React$Component6) {
   _createClass(BookInfo, [{
     key: "render",
     value: function render() {
-      var _this3 = this;
+      var _this4 = this;
 
       return /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, this.props.book.name), /*#__PURE__*/React.createElement("td", null, this.props.book.cover), /*#__PURE__*/React.createElement("td", null, this.props.book.authors.map(function (a) {
         return a.name;
@@ -42348,13 +42572,13 @@ var BookInfo = /*#__PURE__*/function (_React$Component6) {
         type: "button",
         value: "\u041F\u0440\u043E\u0441\u043C\u043E\u0442\u0440",
         onClick: function onClick(e) {
-          _this3.props.onView(e, _this3.props.book.id);
+          _this4.props.onView(e, _this4.props.book.id);
         }
       }), "\xA0", /*#__PURE__*/React.createElement("input", {
         type: "button",
         value: "\u0417\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044C",
         onClick: function onClick(e) {
-          _this3.props.onDownload(e, _this3.props.book.id);
+          _this4.props.onDownload(e, _this4.props.book.id);
         }
       }), "\xA0", /*#__PURE__*/React.createElement(_managing_books__WEBPACK_IMPORTED_MODULE_0__["EditDialog"], {
         book: this.props.book,
@@ -42363,7 +42587,7 @@ var BookInfo = /*#__PURE__*/function (_React$Component6) {
         type: "button",
         value: "\u0423\u0434\u0430\u043B\u0438\u0442\u044C",
         onClick: function onClick(e) {
-          _this3.props.onDelete(e, _this3.props.book.id);
+          _this4.props.onDelete(e, _this4.props.book.id);
         }
       })));
     }
@@ -42504,7 +42728,6 @@ var AddDialog = Object(mobx_react__WEBPACK_IMPORTED_MODULE_0__["observer"])(_cla
         });
       }
 
-      console.warn(book);
       this.props.onAdd(book);
       ReactDOM.findDOMNode(this.refs["book_name"]).value = "";
       ReactDOM.findDOMNode(this.refs["book_cover"]).value = "";
@@ -42679,7 +42902,6 @@ var EditDialog = Object(mobx_react__WEBPACK_IMPORTED_MODULE_0__["observer"])(_cl
         });
       }
 
-      console.warn(book);
       this.props.onEdit(book); // Navigate away from the dialog to hide it.
 
       window.location = "#";
