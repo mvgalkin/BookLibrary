@@ -12,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.MimeType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -230,7 +231,29 @@ public class LibraryApiController {
             produces = MediaType.APPLICATION_OCTET_STREAM_VALUE
     )
     public @ResponseBody
-    ResponseEntity<byte[]> getBookContent(
+    ResponseEntity<byte[]> downloadBookContent(
+            @PathVariable(value = "id") Long id
+    ){
+        var bookContent = libraryService.getBookContent(id);
+        if (bookContent == null) {
+            return ResponseEntity.notFound().build();
+        } else {
+            if (bookContent.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            } else {
+                var content = bookContent.get();
+
+                return ResponseEntity.ok().contentLength(content.length).header("Content-Disposition", "attachment; filename=filename.pdf").body(content);
+            }
+        }
+    }
+
+    @GetMapping(
+            value = "/books/{id}/show",
+            produces = MediaType.APPLICATION_PDF_VALUE
+    )
+    public @ResponseBody
+    ResponseEntity<byte[]> showBookContent(
             @PathVariable(value = "id") Long id
     ){
         var bookContent = libraryService.getBookContent(id);

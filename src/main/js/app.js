@@ -222,7 +222,7 @@ class App extends React.Component {
 
     onView(e, id){
         e.preventDefault();
-        window.location='.'+root+'/books/'+id+'/content'
+        window.location='.'+root+'/books/'+id+'/show'
     }
 
     onDownload(e, id){

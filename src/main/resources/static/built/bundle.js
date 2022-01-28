@@ -44161,7 +44161,7 @@ var App = /*#__PURE__*/function (_React$Component) {
     key: "onView",
     value: function onView(e, id) {
       e.preventDefault();
-      window.location = '.' + root + '/books/' + id + '/content';
+      window.location = '.' + root + '/books/' + id + '/show';
     }
   }, {
     key: "onDownload",
