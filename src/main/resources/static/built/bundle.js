@@ -44121,7 +44121,7 @@ var App = /*#__PURE__*/function (_React$Component) {
       });
       var formData = new FormData();
       formData.append('book', book_dto);
-      formData.append('cover', this.state.selectedContent);
+      formData.append('cover', this.state.selectedCover);
       formData.append('content', this.state.selectedContent); //axios.post(root+'/books_and_content', formData, {headers: {'Content-Type': 'multipart/form-data'}})
 
       client({
