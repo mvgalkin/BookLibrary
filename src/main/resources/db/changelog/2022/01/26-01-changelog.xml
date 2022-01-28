@@ -21,8 +21,8 @@
             <column name="name" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="cover" type="BLOB"/>
-            <column name="content" type="BLOB"/>
+            <column name="cover" type="bytea"/>
+            <column name="content" type="bytea"/>
         </createTable>
     </changeSet>
     <changeSet id="1643180782078-3" author="m.galkin (generated)">

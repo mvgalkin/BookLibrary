@@ -138,4 +138,19 @@ public class LibraryServiceImpl implements LibraryService {
     public boolean isExists(long id) {
         return booksRepository.existsById(id);
     }
+
+    @Override
+    public Optional<byte[]> getBookCover(long id) {
+        Optional<Book> book = booksRepository.findById(id);
+        if (book.isEmpty()) {
+            return null;
+        } else {
+            var content = book.get().getCover();
+            if (content==null) {
+                return Optional.empty();
+            } else {
+                return Optional.of(book.get().getCover());
+            }
+        }
+    }
 }

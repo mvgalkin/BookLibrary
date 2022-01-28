@@ -1,6 +1,7 @@
 package org.mvgalkin.models;
 
 import lombok.*;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -21,9 +22,11 @@ public class Book implements BookInfoView {
     private String name;
 
     @Lob
+    @Type(type="org.hibernate.type.BinaryType")
     private byte[] cover;
 
     @Lob
+    @Type(type="org.hibernate.type.BinaryType")
     private byte[] content;
 
     @ManyToMany(fetch = FetchType.EAGER)

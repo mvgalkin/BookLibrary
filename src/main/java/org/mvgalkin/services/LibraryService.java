@@ -12,6 +12,7 @@ public interface LibraryService {
     Optional<BookInfoView> getBookInfoView(long id);
 
     Optional<byte[]> getBookContent(long id);
+    Optional<byte[]> getBookCover(long id);
 
     Page<BookInfoView> findBooksByName(String partOfName, Integer pageNumber, Integer pageSize);
     Page<BookInfoView> findBooksByAuthorName(String name, Integer pageNumber, Integer pageSize);

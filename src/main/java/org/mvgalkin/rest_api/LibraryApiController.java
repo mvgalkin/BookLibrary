@@ -5,6 +5,7 @@ import org.mvgalkin.models.BookInfoView;
 import org.mvgalkin.services.LibraryService;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -63,24 +64,6 @@ public class LibraryApiController {
             return ResponseEntity.notFound().build();
         } else {
             return ResponseEntity.ok().body(book.get());
-        }
-    }
-
-    @GetMapping("/books/{id}/content")
-    public @ResponseBody
-    ResponseEntity<byte[]> getBookContent(
-            @PathVariable(value = "id") Long id
-    ){
-        var bookContent = libraryService.getBookContent(id);
-        if (bookContent == null) {
-            return ResponseEntity.notFound().build();
-        } else {
-            if (bookContent.isEmpty()) {
-                return ResponseEntity.noContent().build();
-            } else {
-                var content = bookContent.get();
-                return ResponseEntity.ok().contentLength(content.length).body(content);
-            }
         }
     }
 
@@ -185,6 +168,47 @@ public class LibraryApiController {
             return ResponseEntity.ok().body(currentUserName);
         }
         return ResponseEntity.ok().body("Anonymous");
+    }
+
+    @GetMapping(
+            value = "/image/{id}",
+            produces = MediaType.IMAGE_JPEG_VALUE
+    )
+    public ResponseEntity<byte[]> getCover(
+            @PathVariable(value = "id") Long id
+    ){
+        var bookCover = libraryService.getBookCover(id);
+        if (bookCover == null) {
+            return ResponseEntity.notFound().build();
+        } else {
+            if (bookCover.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            } else {
+                var content = bookCover.get();
+                return ResponseEntity.ok().contentLength(content.length).body(content);
+            }
+        }
+    }
+
+    @GetMapping(
+            value = "/books/{id}/content",
+            produces = MediaType.APPLICATION_OCTET_STREAM_VALUE
+    )
+    public @ResponseBody
+    ResponseEntity<byte[]> getBookContent(
+            @PathVariable(value = "id") Long id
+    ){
+        var bookContent = libraryService.getBookContent(id);
+        if (bookContent == null) {
+            return ResponseEntity.notFound().build();
+        } else {
+            if (bookContent.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            } else {
+                var content = bookContent.get();
+                return ResponseEntity.ok().contentLength(content.length).body(content);
+            }
+        }
     }
 }
 
