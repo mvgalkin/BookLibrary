@@ -18,7 +18,7 @@ class BookInfoList extends React.Component{
         var books = [];
         if (this.props.books.length>0) {
             books = this.props.books.map(book =>
-                <BookInfo key={book.name} books={book}/>
+                <BookInfo key={book.id} books={book}/>
             );
         } 
 

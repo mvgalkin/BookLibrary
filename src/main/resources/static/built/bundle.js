@@ -44512,7 +44512,7 @@ var BookInfoList = /*#__PURE__*/function (_React$Component2) {
       if (this.props.books.length > 0) {
         books = this.props.books.map(function (book) {
           return /*#__PURE__*/React.createElement(BookInfo, {
-            key: book.name,
+            key: book.id,
             books: book
           });
         });
@@ -44815,7 +44815,7 @@ var BookInfoList = /*#__PURE__*/function (_React$Component5) {
 
         var books = (_this$props$books = this.props.books) === null || _this$props$books === void 0 ? void 0 : _this$props$books.map(function (book) {
           return /*#__PURE__*/React.createElement(BookInfo, {
-            key: book.name,
+            key: "book_key_".concat(book.id),
             book: book,
             onView: _this3.props.onView,
             onCoverChange: _this3.props.onCoverChange,

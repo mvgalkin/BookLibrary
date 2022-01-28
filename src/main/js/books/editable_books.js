@@ -106,7 +106,7 @@ class BookInfoList extends React.Component{
             )
         } else {
             const books=this.props.books?.map(book =>
-                    <BookInfo key={book.name} book={book} onView={this.props.onView} onCoverChange={this.props.onCoverChange} onContentChange={this.props.onContentChange} onDownload={this.props.onDownload} onEdit={this.props.onEdit} onDelete={this.props.onDelete}/>
+                    <BookInfo key={`book_key_${book.id}`} book={book} onView={this.props.onView} onCoverChange={this.props.onCoverChange} onContentChange={this.props.onContentChange} onDownload={this.props.onDownload} onEdit={this.props.onEdit} onDelete={this.props.onDelete}/>
                 );
             return (
                 <table className="books">

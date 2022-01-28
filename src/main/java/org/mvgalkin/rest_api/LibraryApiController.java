@@ -190,7 +190,7 @@ public class LibraryApiController {
     public ResponseEntity<?> deleteBook(@PathVariable("id") long id){
         if (libraryService.isExists(id)) {
             libraryService.delete(id);
-            return ResponseEntity.ok().body("Book has been deleted successfully.");
+            return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.notFound().build();
         }
