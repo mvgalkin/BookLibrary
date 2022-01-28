@@ -42,7 +42,7 @@ class App extends React.Component {
         this.findByGenre=this.findByGenre.bind(this);
         this.onCloseFind=this.onCloseFind.bind(this);
         this.onContentChange=this.onContentChange.bind(this);
-        this.onCoverChange=this.onContentChange.bind(this);
+        this.onCoverChange=this.onCoverChange.bind(this);
         this.currentPageNumber = 0;
     }
 
@@ -181,15 +181,25 @@ class App extends React.Component {
     }
 
     addBookWithContent(book){
-        const dto_object = new Blob([JSON.stringify(book)], {
+        book.content = null;
+        book.cover = null;
+        const book_dto = new Blob([JSON.stringify(book)],{
             type: 'application/json'
         })
         const formData = new FormData();
-        formData.append('book','{"name":"text"}');
+        formData.append('book', book_dto);
         formData.append('cover', this.state.selectedContent);
         formData.append('content', this.state.selectedContent);
 
-        axios.post(root+'/books_and_content', formData, {headers: {'Content-Type': 'multipart/form-data'}})
+        //axios.post(root+'/books_and_content', formData, {headers: {'Content-Type': 'multipart/form-data'}})
+        client({
+            method: 'POST',
+            path: root+'/books_and_content',
+            entity: formData,
+            headers: {'Content-Type': 'multipart/form-data'}
+        }).done(response => {
+            this.loadingAllBooksForPage(this.currentPageNumber)
+        });
     }
 
     addBookWithoutContent(book){
@@ -204,9 +214,9 @@ class App extends React.Component {
     }
 
     onAdd(book){
-        this.addBookWithoutContent(book)
+        //this.addBookWithoutContent(book)
 
-        //this.addBookWithContent(book);
+        this.addBookWithContent(book);
 
     }
 

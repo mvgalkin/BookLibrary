@@ -150,9 +150,9 @@ export class AddDialog extends React.Component {
                         <h2>Добавление книги</h2>
 
                             <input type="text" placeholder="Название" ref="book_name" className="field"/><br/><br/>
-                            <label>Обложка:</label><br/>
+                            <label>Обложка(jpg):</label><br/>
                             <input type="file" name="cover" placeholder="Обложка" ref="book_cover" className="field" onChange={this.props.onCoverChange}/><br/>
-                            <label>Книжка(pdf,ebuk и т.п.):</label><br/>
+                            <label>Книжка(pdf):</label><br/>
                             <input type="file" name="content" placeholder="Книжка(pdf,ebuk и т.п.)" ref="book_content" className="field" onChange={this.props.onContentChange}/>
                             <br/>
                             <label>Жанры:</label><input type="button" value="+" onClick={this.addGenre}/><input type="button" value="-" onClick={this.removeGenre}/>
