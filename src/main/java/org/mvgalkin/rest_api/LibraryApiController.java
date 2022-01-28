@@ -1,5 +1,6 @@
 package org.mvgalkin.rest_api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mvgalkin.models.Book;
 import org.mvgalkin.models.BookInfoView;
 import org.mvgalkin.services.LibraryService;
@@ -13,6 +14,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 
 @CrossOrigin("*")
@@ -143,18 +146,19 @@ public class LibraryApiController {
     }
 
     @PostMapping(value = "/books_and_content",
-    consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
     public ResponseEntity<?> addBookWithContent(
-            @RequestParam String jsonBook,
-            @RequestParam MultipartFile cover,
-            @RequestParam MultipartFile content
-    ){
-        LoggerFactory.getLogger("LibraryApiController").error(String.format("book=%s",jsonBook));
-        LoggerFactory.getLogger("LibraryApiController").error(String.format("cover=%s",cover));
-        LoggerFactory.getLogger("LibraryApiController").error(String.format("content=%s",content));
-        //LoggerFactory.getLogger("LibraryApiController").error(String.format("file=%s",file));
-        /*
+            @RequestPart Book book,
+            @RequestPart MultipartFile cover,
+            @RequestPart MultipartFile content
+    ) throws IOException {
+        //LoggerFactory.getLogger("LibraryApiController").error(String.format("book=%s",book));
+        //LoggerFactory.getLogger("LibraryApiController").error(String.format("cover=%s",cover));
+        //LoggerFactory.getLogger("LibraryApiController").error(String.format("content=%s",content));
+
         if (book.getId() == null) {book.setId(0L);}
+        book.setCover(cover.getBytes());
+        book.setContent(content.getBytes());
         book.getAuthors().forEach(author -> {
             if (author.getId()==null) {
                 author.setId(0L);
@@ -169,8 +173,6 @@ public class LibraryApiController {
 
         Book savedBook = libraryService.save(book);
         return ResponseEntity.ok().body(savedBook);
-         */
-        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/books/{id}")

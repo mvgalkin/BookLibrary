@@ -44116,10 +44116,10 @@ var App = /*#__PURE__*/function (_React$Component) {
         type: 'application/json'
       });
       var formData = new FormData();
-      formData.append('book', dto_object);
+      formData.append('book', '{"name":"text"}');
       formData.append('cover', this.state.selectedContent);
       formData.append('content', this.state.selectedContent);
-      axios__WEBPACK_IMPORTED_MODULE_5___default.a.post(root + '/books', formData, {
+      axios__WEBPACK_IMPORTED_MODULE_5___default.a.post(root + '/books_and_content', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -44144,10 +44144,8 @@ var App = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "onAdd",
     value: function onAdd(book) {
-      this.addBookWithoutContent(book);
-      /*
-      this.addBookWithCOntent(book)
-      */
+      //this.addBookWithoutContent(book)
+      this.addBookWithContent(book);
     }
   }, {
     key: "onView",

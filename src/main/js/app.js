@@ -185,11 +185,11 @@ class App extends React.Component {
             type: 'application/json'
         })
         const formData = new FormData();
-        formData.append('book', dto_object);
+        formData.append('book','{"name":"text"}');
         formData.append('cover', this.state.selectedContent);
         formData.append('content', this.state.selectedContent);
 
-        axios.post(root+'/books', formData, {headers: {'Content-Type': 'multipart/form-data'}})
+        axios.post(root+'/books_and_content', formData, {headers: {'Content-Type': 'multipart/form-data'}})
     }
 
     addBookWithoutContent(book){
@@ -205,9 +205,9 @@ class App extends React.Component {
 
     onAdd(book){
         this.addBookWithoutContent(book)
-        /*
-        this.addBookWithCOntent(book)
-        */
+
+        //this.addBookWithContent(book);
+
     }
 
     onView(e, id){
