@@ -17,14 +17,14 @@ export class EditableBooksList extends React.Component{
         const content = this.props.pageWithBooks.content
         const dataType=[];
         if (this.props.findCaption!==""){
-            dataType.push(<br/>)
+            dataType.push(<br key={"keyCaptionBr"}/>)
             dataType.push(<b key={"keyCaption"}>{this.props.findCaption}</b>);
             dataType.push(<input key={"keyClose"} type="button" value="Отменить поиск" onClick={this.props.onCloseFind}/>)
         }
         return (
             <div>
                 <h2>Наша библиотека:</h2>
-                <form>
+                <form encType="multipart/form-data">
                     <label>Поиск:</label>
                     <input type="text" key={"keyFind"} ref="find" width="200px"/>
                     <input type="button" key={"keyFindByName"} value="По Названию" onClick={(e)=>{this.props.findByName(e, ReactDOM.findDOMNode(this.refs["find"]).value.trim())}}/>
@@ -36,8 +36,8 @@ export class EditableBooksList extends React.Component{
                         <PagingInfo pageNumber={pageNumber}
                                     totalPages={totalPages}/>
                     </div>
-                    <AddDialog onAdd={this.props.onAdd}/>
-                    <BookInfoList books={content} onView={this.props.onView} onDownload={this.props.onDownload} onEdit={this.props.onEdit} onDelete={this.props.onDelete}/>
+                    <AddDialog onAdd={this.props.onAdd} onCoverChange={this.props.onCoverChange} onContentChange={this.props.onContentChange}/>
+                    <BookInfoList books={content} onView={this.props.onView} onCoverChange={this.props.onCoverChange} onContentChange={this.props.onContentChange} onDownload={this.props.onDownload} onEdit={this.props.onEdit} onDelete={this.props.onDelete}/>
                     <div align="center">
                         <ManagePaging pageNumber={pageNumber}
                                       totalPages={totalPages}
@@ -106,7 +106,7 @@ class BookInfoList extends React.Component{
             )
         } else {
             const books=this.props.books?.map(book =>
-                    <BookInfo key={book.name} book={book} onView={this.props.onView} onDownload={this.props.onDownload} onEdit={this.props.onEdit} onDelete={this.props.onDelete}/>
+                    <BookInfo key={book.name} book={book} onView={this.props.onView} onCoverChange={this.props.onCoverChange} onContentChange={this.props.onContentChange} onDownload={this.props.onDownload} onEdit={this.props.onEdit} onDelete={this.props.onDelete}/>
                 );
             return (
                 <table className="books">
@@ -138,7 +138,7 @@ class BookInfo extends React.Component{
                     <input type="hidden" value={this.props.book.id}/>
                     <input type="button" value="Просмотр" onClick={(e)=>{this.props.onView(e,this.props.book.id)}}/>&nbsp;
                     <input type="button" value="Загрузить" onClick={(e)=>{this.props.onDownload(e,this.props.book.id)}}/>&nbsp;
-                    <EditDialog book={this.props.book} onEdit={this.props.onEdit}/>&nbsp;
+                    <EditDialog book={this.props.book} onEdit={this.props.onEdit} onCoverChange={this.props.onCoverChange} onContentChange={this.props.onContentChange}/>&nbsp;
                     <input type="button" value="Удалить" onClick={(e)=>{this.props.onDelete(e,this.props.book.id)}}/>
                 </td>
             </tr>

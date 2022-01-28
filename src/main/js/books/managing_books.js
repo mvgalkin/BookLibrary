@@ -151,9 +151,9 @@ export class AddDialog extends React.Component {
 
                             <input type="text" placeholder="Название" ref="book_name" className="field"/><br/><br/>
                             <label>Обложка:</label><br/>
-                            <input type="file" placeholder="Обложка" ref="book_cover" className="field"/><br/>
+                            <input type="file" name="cover" placeholder="Обложка" ref="book_cover" className="field" onChange={this.props.onCoverChange}/><br/>
                             <label>Книжка(pdf,ebuk и т.п.):</label><br/>
-                            <input type="file" placeholder="Книжка(pdf,ebuk и т.п.)" ref="book_content" className="field"/>
+                            <input type="file" name="content" placeholder="Книжка(pdf,ebuk и т.п.)" ref="book_content" className="field" onChange={this.props.onContentChange}/>
                             <br/>
                             <label>Жанры:</label><input type="button" value="+" onClick={this.addGenre}/><input type="button" value="-" onClick={this.removeGenre}/>
                             {genreInputs}
@@ -283,13 +283,13 @@ export class EditDialog extends React.Component {
 
         const cover = () => {
             if (this.props.book.cover!=null) {
-                return (<input type="hidden" ref="book_cover" value={this.props.book.cover}/>)
+                return (<input type="hidden" ref="book_cover" value={this.props.book.cover} onChange={this.props.onCoverChange}/>)
             }
         }
 
         const content = () => {
             if (this.props.book.content!=null) {
-                return (<input type="hidden" ref="book_content" value={this.props.book.content}/>)
+                return (<input type="hidden" ref="book_content" value={this.props.book.content} onChange={this.props.onContentChange}/>)
             }
         }
 

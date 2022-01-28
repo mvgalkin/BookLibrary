@@ -5,6 +5,7 @@ import {BestBooks} from './books/best_books.js';
 import {EditableBooksList} from './books/editable_books.js';
 import {observable} from "mobx";
 import {observer} from "mobx-react";
+import axios from "axios";
 
 
 const React = require('react');
@@ -25,8 +26,11 @@ class App extends React.Component {
             isFindText: "",
             userName: "",
             bestBooks: [],
-            pageWithBooks: {}
+            pageWithBooks: {},
+            selectedCover: null,
+            selectedContent: null
         };
+
         this.onNavigateToPage = this.onNavigateToPage.bind(this);
         this.onAdd = this.onAdd.bind(this);
         this.onEdit = this.onEdit.bind(this);
@@ -37,8 +41,12 @@ class App extends React.Component {
         this.findByAuthor=this.findByAuthor.bind(this);
         this.findByGenre=this.findByGenre.bind(this);
         this.onCloseFind=this.onCloseFind.bind(this);
+        this.onContentChange=this.onContentChange.bind(this);
+        this.onCoverChange=this.onContentChange.bind(this);
         this.currentPageNumber = 0;
     }
+
+
 
     componentDidMount() {
         fetch("/api/login", {headers:{'X-Requested-With': 'XMLHttpRequest'}})
@@ -52,7 +60,9 @@ class App extends React.Component {
                             isFindText: this.state.isFindText,
                             userName: this.state.userName,
                             bestBooks: this.state.bestBooks,
-                            pageWithBooks: this.state.pageWithBooks
+                            pageWithBooks: this.state.pageWithBooks,
+                            selectedCover: this.state.selectedCover,
+                            selectedContent: this.state.selectedContent
                         });
                     }
                 } else {
@@ -64,7 +74,9 @@ class App extends React.Component {
                             isFindText: this.state.isFindText,
                             userName: this.state.userName,
                             bestBooks: this.state.bestBooks,
-                            pageWithBooks: this.state.pageWithBooks
+                            pageWithBooks: this.state.pageWithBooks,
+                            selectedCover: this.state.selectedCover,
+                            selectedContent: this.state.selectedContent
                         });
                     }
                 }
@@ -78,7 +90,9 @@ class App extends React.Component {
                     isFindText: this.state.isFindText,
                     userName: data,
                     bestBooks: this.state.bestBooks,
-                    pageWithBooks: this.state.pageWithBooks
+                    pageWithBooks: this.state.pageWithBooks,
+                    selectedCover: this.state.selectedCover,
+                    selectedContent: this.state.selectedContent
                 });
             })
             .then((data)=>{
@@ -97,7 +111,9 @@ class App extends React.Component {
                         isFindText: this.state.isFindText,
                         userName: this.state.userName,
                         bestBooks: this.state.bestBooks,
-                        pageWithBooks: this.state.pageWithBooks
+                        pageWithBooks: this.state.pageWithBooks,
+                        selectedCover: this.state.selectedCover,
+                        selectedContent: this.state.selectedContent
                     });
                 }
             });
@@ -113,7 +129,9 @@ class App extends React.Component {
                 isFindText: this.state.isFindText,
                 userName: this.state.userName,
                 bestBooks: response.entity,
-                pageWithBooks: this.state.pageWithBooks
+                pageWithBooks: this.state.pageWithBooks,
+                selectedCover: this.state.selectedCover,
+                selectedContent: this.state.selectedContent
             });
         });
     }
@@ -127,12 +145,54 @@ class App extends React.Component {
                 isFindText: this.state.isFindText,
                 userName: this.state.userName,
                 bestBooks: this.state.bestBooks,
-                pageWithBooks: response.entity
+                pageWithBooks: response.entity,
+                selectedCover: this.state.selectedCover,
+                selectedContent: this.state.selectedContent
             });
         });
     }
 
-    onAdd(book){
+    onCoverChange(e){
+        this.setState({
+            isAuthorized: this.state.isAuthorized,
+            isFindBy: this.state.isFindBy,
+            findCaption: this.state.findCaption,
+            isFindText: this.state.isFindText,
+            userName: this.state.userName,
+            bestBooks: this.state.bestBooks,
+            pageWithBooks: this.state.pageWithBooks,
+            selectedCover: e.target.files[0],
+            selectedContent: this.state.selectedContent
+        });
+    }
+
+    onContentChange(e){
+        this.setState({
+            isAuthorized: this.state.isAuthorized,
+            isFindBy: this.state.isFindBy,
+            findCaption: this.state.findCaption,
+            isFindText: this.state.isFindText,
+            userName: this.state.userName,
+            bestBooks: this.state.bestBooks,
+            pageWithBooks: this.state.pageWithBooks,
+            selectedCover: this.state.selectedCover,
+            selectedContent: e.target.files[0]
+        });
+    }
+
+    addBookWithContent(book){
+        const dto_object = new Blob([JSON.stringify(book)], {
+            type: 'application/json'
+        })
+        const formData = new FormData();
+        formData.append('book', dto_object);
+        formData.append('cover', this.state.selectedContent);
+        formData.append('content', this.state.selectedContent);
+
+        axios.post(root+'/books', formData, {headers: {'Content-Type': 'multipart/form-data'}})
+    }
+
+    addBookWithoutContent(book){
         client({
             method: 'POST',
             path: root+'/books',
@@ -141,6 +201,13 @@ class App extends React.Component {
         }).done(response => {
             this.loadingAllBooksForPage(this.currentPageNumber)
         });
+    }
+
+    onAdd(book){
+        this.addBookWithoutContent(book)
+        /*
+        this.addBookWithCOntent(book)
+        */
     }
 
     onView(e, id){
@@ -197,7 +264,9 @@ class App extends React.Component {
                 findCaption: "Результат поиска по Имени: '"+name+"'",
                 userName: this.state.userName,
                 bestBooks: this.state.bestBooks,
-                pageWithBooks: response.entity
+                pageWithBooks: response.entity,
+                selectedCover: this.state.selectedCover,
+                selectedContent: this.state.selectedContent
             });
         });
     }
@@ -211,21 +280,25 @@ class App extends React.Component {
                 findCaption: "Результат поиска по Автору: '"+name+"'",
                 userName: this.state.userName,
                 bestBooks: this.state.bestBooks,
-                pageWithBooks: response.entity
+                pageWithBooks: response.entity,
+                selectedCover: this.state.selectedCover,
+                selectedContent: this.state.selectedContent
             });
         });
     }
 
     findByGenre(e, name){
         e.preventDefault();
-        client({method: 'GET', path: root+'/books/genre/name/'+name+'?pagenumber='+this.currentPageNumber}).done(response => {
+        client({method: 'GET', path: root+'/books/find/genre/'+name+'?pagenumber='+this.currentPageNumber}).done(response => {
             this.setState({
                 isAuthorized: this.state.isAuthorized,
                 isFindBy: "genre",
                 findCaption: "Результат поиска по Жанру: '"+name+"'",
                 userName: this.state.userName,
                 bestBooks: this.state.bestBooks,
-                pageWithBooks: response.entity
+                pageWithBooks: response.entity,
+                selectedCover: this.state.selectedCover,
+                selectedContent: this.state.selectedContent
             });
         });
     }
@@ -237,7 +310,9 @@ class App extends React.Component {
             isFindBy: this.state.isFindBy,
             userName: this.state.userName,
             bestBooks: this.state.bestBooks,
-            pageWithBooks: this.state.pageWithBooks
+            pageWithBooks: this.state.pageWithBooks,
+            selectedCover: this.state.selectedCover,
+            selectedContent: this.state.selectedContent
         });
     }
 
@@ -255,7 +330,7 @@ class App extends React.Component {
                 <div>
                     <SucceededAuthForm userName={this.state.userName}/>
                     <br/><br/>
-                    <EditableBooksList pageWithBooks={this.state.pageWithBooks} findCaption={this.state.findCaption} findByName={this.findByName} findByAuthor={this.findByAuthor} findByGenre={this.findByGenre} onCloseFind={this.onCloseFind} onAdd={this.onAdd} onView={this.onView} onDownload={this.onDownload} onEdit={this.onEdit} onDelete={this.onDelete} onNavigateToPage={this.onNavigateToPage}/>
+                    <EditableBooksList pageWithBooks={this.state.pageWithBooks} findCaption={this.state.findCaption} findByName={this.findByName} findByAuthor={this.findByAuthor} findByGenre={this.findByGenre} onCoverChange={this.onCoverChange} onContentChange={this.onContentChange} onCloseFind={this.onCloseFind} onAdd={this.onAdd} onView={this.onView} onDownload={this.onDownload} onEdit={this.onEdit} onDelete={this.onDelete} onNavigateToPage={this.onNavigateToPage}/>
                 </div>
             )
         }

@@ -5,6 +5,7 @@
   "author": "M. Galkin",
   "license": "Apache-2.0",
   "dependencies": {
+    "axios": "^0.25.0",
     "mobx": "^6.3.13",
     "mobx-react": "^7.2.1",
     "react": "^16.5.2",

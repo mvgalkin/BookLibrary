@@ -12,8 +12,10 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
+@CrossOrigin("*")
 @RestController()
 @RequestMapping("/api")
 public class LibraryApiController {
@@ -121,7 +123,7 @@ public class LibraryApiController {
         return ResponseEntity.ok().body(libraryService.findBooksByGenre(genre, pageNumber, pageSize));
     }
 
-    @PostMapping("/books")
+    @PostMapping(value = "/books")
     public ResponseEntity<?> addBook(@RequestBody Book book){
        if (book.getId() == null) {book.setId(0L);}
        book.getAuthors().forEach(author -> {
@@ -138,6 +140,37 @@ public class LibraryApiController {
 
         Book savedBook = libraryService.save(book);
         return ResponseEntity.ok().body(savedBook);
+    }
+
+    @PostMapping(value = "/books_and_content",
+    consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> addBookWithContent(
+            @RequestParam String jsonBook,
+            @RequestParam MultipartFile cover,
+            @RequestParam MultipartFile content
+    ){
+        LoggerFactory.getLogger("LibraryApiController").error(String.format("book=%s",jsonBook));
+        LoggerFactory.getLogger("LibraryApiController").error(String.format("cover=%s",cover));
+        LoggerFactory.getLogger("LibraryApiController").error(String.format("content=%s",content));
+        //LoggerFactory.getLogger("LibraryApiController").error(String.format("file=%s",file));
+        /*
+        if (book.getId() == null) {book.setId(0L);}
+        book.getAuthors().forEach(author -> {
+            if (author.getId()==null) {
+                author.setId(0L);
+            }
+        });
+
+        book.getGenres().forEach(genre -> {
+            if (genre.getId()==null) {
+                genre.setId(0L);
+            }
+        });
+
+        Book savedBook = libraryService.save(book);
+        return ResponseEntity.ok().body(savedBook);
+         */
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/books/{id}")
