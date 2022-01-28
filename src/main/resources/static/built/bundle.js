@@ -44093,9 +44093,6 @@ var App = /*#__PURE__*/function (_React$Component) {
         selectedCover: e.target.files[0],
         selectedContent: this.state.selectedContent
       });
-      console.error("onContentChange");
-      console.error(this.state.selectedCover);
-      console.error(this.state.selectedContent);
     }
   }, {
     key: "onContentChange",
@@ -44111,9 +44108,6 @@ var App = /*#__PURE__*/function (_React$Component) {
         selectedCover: this.state.selectedCover,
         selectedContent: e.target.files[0]
       });
-      console.error("onContentChange");
-      console.error(this.state.selectedCover);
-      console.error(this.state.selectedContent);
     }
   }, {
     key: "addBookWithContent",
@@ -44855,7 +44849,9 @@ var BookInfo = /*#__PURE__*/function (_React$Component6) {
     value: function render() {
       var _this4 = this;
 
-      return /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, this.props.book.name), /*#__PURE__*/React.createElement("td", null, this.props.book.cover), /*#__PURE__*/React.createElement("td", null, this.props.book.authors.map(function (a) {
+      return /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, this.props.book.name), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("img", {
+        src: "data:image/jpeg;base64,".concat(this.props.book.cover)
+      })), /*#__PURE__*/React.createElement("td", null, this.props.book.authors.map(function (a) {
         return a.name;
       }).join(', ')), /*#__PURE__*/React.createElement("td", null, this.props.book.genres.map(function (g) {
         return g.name;
@@ -45068,8 +45064,6 @@ var AddDialog = Object(mobx_react__WEBPACK_IMPORTED_MODULE_0__["observer"])(_cla
   }, {
     key: "render",
     value: function render() {
-      var _this2 = this;
-
       var authorInputs = [];
 
       for (var i = 0; i < authorsCount.count; i++) {
@@ -45118,22 +45112,14 @@ var AddDialog = Object(mobx_react__WEBPACK_IMPORTED_MODULE_0__["observer"])(_cla
         placeholder: "\u041E\u0431\u043B\u043E\u0436\u043A\u0430",
         ref: "book_cover",
         className: "field",
-        onChange: function onChange(e) {
-          console.warn(e.target.files[0]);
-
-          _this2.props.onCoverChange(e);
-        }
+        onChange: this.props.onCoverChange
       }), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("label", null, "\u041A\u043D\u0438\u0436\u043A\u0430(pdf):"), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("input", {
         type: "file",
         name: "content",
         placeholder: "\u041A\u043D\u0438\u0436\u043A\u0430(pdf,ebuk \u0438 \u0442.\u043F.)",
         ref: "book_content",
         className: "field",
-        onChange: function onChange(e) {
-          console.warn(e.target.files[0]);
-
-          _this2.props.onContentChange(e);
-        }
+        onChange: this.props.onContentChange
       }), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("label", null, "\u0416\u0430\u043D\u0440\u044B:"), /*#__PURE__*/React.createElement("input", {
         type: "button",
         value: "+",
@@ -45164,20 +45150,20 @@ var EditDialog = Object(mobx_react__WEBPACK_IMPORTED_MODULE_0__["observer"])(_cl
   var _super2 = _createSuper(EditDialog);
 
   function EditDialog(props) {
-    var _this3;
+    var _this2;
 
     _classCallCheck(this, EditDialog);
 
-    _this3 = _super2.call(this, props);
+    _this2 = _super2.call(this, props);
     authorsCount.setCount(props.book.authors.length);
     genresCount.setCount(props.book.genres.length);
-    _this3.handleSubmit = _this3.handleSubmit.bind(_assertThisInitialized(_this3));
-    _this3.addAuthor = _this3.addAuthor.bind(_assertThisInitialized(_this3));
-    _this3.removeAuthor = _this3.removeAuthor.bind(_assertThisInitialized(_this3));
-    _this3.addGenre = _this3.addGenre.bind(_assertThisInitialized(_this3));
-    _this3.removeGenre = _this3.removeGenre.bind(_assertThisInitialized(_this3));
-    _this3.showDialog = _this3.showDialog.bind(_assertThisInitialized(_this3));
-    return _this3;
+    _this2.handleSubmit = _this2.handleSubmit.bind(_assertThisInitialized(_this2));
+    _this2.addAuthor = _this2.addAuthor.bind(_assertThisInitialized(_this2));
+    _this2.removeAuthor = _this2.removeAuthor.bind(_assertThisInitialized(_this2));
+    _this2.addGenre = _this2.addGenre.bind(_assertThisInitialized(_this2));
+    _this2.removeGenre = _this2.removeGenre.bind(_assertThisInitialized(_this2));
+    _this2.showDialog = _this2.showDialog.bind(_assertThisInitialized(_this2));
+    return _this2;
   }
 
   _createClass(EditDialog, [{
@@ -45249,7 +45235,7 @@ var EditDialog = Object(mobx_react__WEBPACK_IMPORTED_MODULE_0__["observer"])(_cl
   }, {
     key: "render",
     value: function render() {
-      var _this4 = this;
+      var _this3 = this;
 
       var authorInputs = [];
 
@@ -45310,23 +45296,23 @@ var EditDialog = Object(mobx_react__WEBPACK_IMPORTED_MODULE_0__["observer"])(_cl
       }
 
       var cover = function cover() {
-        if (_this4.props.book.cover != null) {
+        if (_this3.props.book.cover != null) {
           return /*#__PURE__*/React.createElement("input", {
             type: "hidden",
             ref: "book_cover",
-            value: _this4.props.book.cover,
-            onChange: _this4.props.onCoverChange
+            value: _this3.props.book.cover,
+            onChange: _this3.props.onCoverChange
           });
         }
       };
 
       var content = function content() {
-        if (_this4.props.book.content != null) {
+        if (_this3.props.book.content != null) {
           return /*#__PURE__*/React.createElement("input", {
             type: "hidden",
             ref: "book_content",
-            value: _this4.props.book.content,
-            onChange: _this4.props.onContentChange
+            value: _this3.props.book.content,
+            onChange: _this3.props.onContentChange
           });
         }
       };
