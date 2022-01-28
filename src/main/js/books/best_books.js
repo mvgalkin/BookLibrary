@@ -43,7 +43,7 @@ class BookInfo extends React.Component{
         return (
             <tr>
                 <td>{this.props.books.name}</td>
-                <td>{this.props.books.cover}</td>
+                <td><img src={`api/image/${this.props.books.id}`}/></td>
                 <td>{this.props.books.authors.map(a => a.name).join(', ')}</td>
                 <td>{this.props.books.genres.map(g => g.name).join(', ')}</td>
             </tr>

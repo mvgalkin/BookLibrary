@@ -44541,7 +44541,9 @@ var BookInfo = /*#__PURE__*/function (_React$Component3) {
   _createClass(BookInfo, [{
     key: "render",
     value: function render() {
-      return /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, this.props.books.name), /*#__PURE__*/React.createElement("td", null, this.props.books.cover), /*#__PURE__*/React.createElement("td", null, this.props.books.authors.map(function (a) {
+      return /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, this.props.books.name), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("img", {
+        src: "api/image/".concat(this.props.books.id)
+      })), /*#__PURE__*/React.createElement("td", null, this.props.books.authors.map(function (a) {
         return a.name;
       }).join(', ')), /*#__PURE__*/React.createElement("td", null, this.props.books.genres.map(function (g) {
         return g.name;
