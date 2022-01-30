@@ -21,14 +21,19 @@ public class Book implements BookInfoView {
     @Column(nullable = false)
     private String name;
 
+    //todo: вынести в отдельный класс BookImage и добавить туда информацию о mimeType (которая поступает от клиента при загрузке документа)
     @Lob
-    @Type(type="org.hibernate.type.BinaryType")
+    @Type(type = "org.hibernate.type.BinaryType")
     private byte[] cover;
 
+    //todo: вынести в отдельный класс BookFile и добавить туда информацию о mimeType и о названии файла(для того, чтобы при скачивани пользователю генерировалось нормальное название)
     @Lob
-    @Type(type="org.hibernate.type.BinaryType")
+    @Type(type = "org.hibernate.type.BinaryType")
     private byte[] content;
 
+    // Изменение Set<> на List<> (или Collection<>) не подходит, т.к. есть ограничения Hibernate,
+    // если требуется заменить на коллекции, то чтобы заработало придется сильно усложнять логику приложения,
+    // подробнее о проблеме: https://www.baeldung.com/java-hibernate-multiplebagfetchexception
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "books_authors",
@@ -36,6 +41,9 @@ public class Book implements BookInfoView {
             inverseJoinColumns = @JoinColumn(name = "author_id"))
     private Set<Author> authors;
 
+    // Изменение Set<> на List<> (или Collection<>) не подходит, т.к. есть ограничения Hibernate,
+    // если требуется заменить на коллекции, то чтобы заработало придется сильно усложнять логику приложения,
+    // подробнее о проблеме: https://www.baeldung.com/java-hibernate-multiplebagfetchexception
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "books_genres",

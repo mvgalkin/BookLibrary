@@ -30,10 +30,13 @@ public class LibraryServiceImpl implements LibraryService {
     }
 
     @Override
-    public List<BookInfoView> getBestBooks(Integer limit) {
+    public List<BookInfoView> getBestBooks(int limit) {
+
+        //todo: попробовать вариант получение списка случайных элементов через stream (но надо проверить и сравнить производительность)
+
         Iterable<Book> allBooksSource = booksRepository.findAll();
         List<BookInfoView> bestBooks = new ArrayList<>();
-        if (booksRepository.count()<=limit) {
+        if (booksRepository.count() <= limit) {
             allBooksSource.forEach(bestBooks::add);
             return bestBooks;
         } else {
@@ -43,31 +46,32 @@ public class LibraryServiceImpl implements LibraryService {
     }
 
 
-    public List<BookInfoView> getRandomElements(List<BookInfoView> list, int totalItems)
-    {
+    public List<BookInfoView> getRandomElements(List<BookInfoView> list, int totalItems) {
         Random rand = new Random();
-
         List<BookInfoView> newList = new ArrayList<>();
         for (int i = 0; i < totalItems; i++) {
-
             int randomIndex = rand.nextInt(list.size());
-
             newList.add(list.get(randomIndex));
-
             list.remove(randomIndex);
         }
         return newList;
     }
 
     @Override
-    public Page<BookInfoView> getBooksByPage(Integer pageNumber, Integer pageSize) {
+    public Page<BookInfoView> getBooksByPage(int pageNumber, int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        //явное преобразование не дает сделать - ругается, хотя на мой взгляд должно работать
+        //скорее всего дело в Generic, в интернете встречал еще вариант (Optional<BookInfoView>)(Optional<?>)X,
+        // - но на мой взгляд это еще больший изврат, и идею все равно предупреждает о небезопасном преобразовании.
         return booksRepository.findAll(pageable).map(book -> book);
 
     }
 
     @Override
     public Optional<BookInfoView> getBookInfoView(long id) {
+        //явное преобразование не дает сделать - ругается, хотя на мой взгляд должно работать
+        //скорее всего дело в Generic, в интернете встречал еще вариант (Optional<BookInfoView>)(Optional<?>)X,
+        // - но на мой взгляд это еще больший изврат, и идею все равно предупреждает о небезопасном преобразовании.
         return booksRepository.findById(id).map(book -> book);
     }
 
@@ -77,56 +81,57 @@ public class LibraryServiceImpl implements LibraryService {
         if (book.isEmpty()) {
             return null;
         } else {
-           var content = book.get().getContent();
-           if (content==null) {
-               return Optional.empty();
-           } else {
-               return Optional.of(book.get().getContent());
-           }
+            var content = book.get().getContent();
+            if (content == null) {
+                return Optional.empty();
+            } else {
+                return Optional.of(book.get().getContent());
+            }
         }
     }
 
     @Override
-    public Page<BookInfoView> findBooksByName(String partOfName, Integer pageNumber, Integer pageSize) {
-        partOfName = "%"+partOfName+"%";
+    public Page<BookInfoView> findBooksByName(String partOfName, int pageNumber, int pageSize) {
+        partOfName = String.format("%%%s%%", partOfName);
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         return booksRepository.findByNameLikeIgnoreCase(partOfName, pageable);
     }
 
     @Override
-    public Page<BookInfoView> findBooksByAuthorName(String name, Integer pageNumber, Integer pageSize) {
-        name = "%"+name+"%";
+    public Page<BookInfoView> findBooksByAuthorName(String name, int pageNumber, int pageSize) {
+        name = String.format("%%%s%%", name);
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         return booksRepository.findByAuthors_NameLikeIgnoreCase(name, pageable);
     }
 
     @Override
-    public Page<BookInfoView> findBooksByGenre(String genre, Integer pageNumber, Integer pageSize) {
-        genre = "%"+genre+"%";
+    public Page<BookInfoView> findBooksByGenre(String genre, int pageNumber, int pageSize) {
+        genre = String.format("%%%s%%", genre);
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         return booksRepository.findByGenres_NameLikeIgnoreCase(genre, pageable);
     }
 
     @Override
     public Book save(Book book) {
-        var savedAuthors = new HashSet<Author>();
-        authorsRepository.saveAll(book.getAuthors()).forEach(savedAuthors::add);
-        var savedGenres = new HashSet<Genre>();
-        genresRepository.saveAll(book.getGenres()).forEach(savedGenres::add);
-        book.setAuthors(savedAuthors);
-        book.setGenres(savedGenres);
+        saveBook(book);
         return booksRepository.save(book);
     }
 
     @Override
     public void update(long id, Book book) {
+        //В примерах, чаще всего игнорится проверка на существование при update, полагаю что из-за того, что под капотом логика save: insert or update
+        //поэтому использую общую логику saveBook
+        saveBook(book);
+        booksRepository.save(book);
+    }
+
+    private void saveBook(Book book) {
         var savedAuthors = new HashSet<Author>();
         authorsRepository.saveAll(book.getAuthors()).forEach(savedAuthors::add);
         var savedGenres = new HashSet<Genre>();
         genresRepository.saveAll(book.getGenres()).forEach(savedGenres::add);
         book.setAuthors(savedAuthors);
         book.setGenres(savedGenres);
-        booksRepository.save(book);
     }
 
     @Override
@@ -146,7 +151,7 @@ public class LibraryServiceImpl implements LibraryService {
             return null;
         } else {
             var content = book.get().getCover();
-            if (content==null) {
+            if (content == null) {
                 return Optional.empty();
             } else {
                 return Optional.of(book.get().getCover());

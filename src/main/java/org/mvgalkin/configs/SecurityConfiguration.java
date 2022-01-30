@@ -2,9 +2,9 @@ package org.mvgalkin.configs;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+//import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+//import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 @Configuration
@@ -40,6 +40,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .logout()
                     .logoutSuccessUrl("/");
     }
+
+    //todo: после того, как будет понятно как с клиента прокинуть пароль в декодированном виде с нужным энкодером, перевести на сипользование БД
+    //todo: скорректировать пути по аналогии с basic auth (см. реализацию выше)
 
     /* вариант с БД
     @Autowired

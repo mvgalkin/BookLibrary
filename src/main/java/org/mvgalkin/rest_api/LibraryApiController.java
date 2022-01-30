@@ -1,24 +1,21 @@
 package org.mvgalkin.rest_api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mvgalkin.models.Book;
 import org.mvgalkin.models.BookInfoView;
 import org.mvgalkin.services.LibraryService;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.MimeType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
 
+//todo: Улучшение: разбить на 3(4) контроллера LibraryApiController, ImagesApiController, AuthApiController, (BooksContentController)
 @CrossOrigin("*")
 @RestController()
 @RequestMapping("/api")
@@ -33,12 +30,12 @@ public class LibraryApiController {
     @GetMapping("/best_books")
     public @ResponseBody
     Iterable<BookInfoView> getBestBooks(
-            @RequestParam(value = "count", defaultValue = "10") Integer limit
-    ){
+            @RequestParam(value = "count", defaultValue = "10") int limit
+    ) {
         //контроль входных параметров (требований нет, поэтому проверка чисто на адекватность)
-        if (limit<1) {
+        if (limit < 1) {
             limit = 10;
-        } else if (limit>25) {
+        } else if (limit > 25) {
             limit = 25;
         }
 
@@ -49,12 +46,12 @@ public class LibraryApiController {
     @GetMapping("/books")
     public @ResponseBody
     Page<BookInfoView> getBooksByPages(
-            @RequestParam(value = "pagenumber", defaultValue = "0") Integer pageNumber,
-            @RequestParam(value = "pagesize", defaultValue = "20") Integer pageSize
-    ){
+            @RequestParam(value = "pagenumber", defaultValue = "0") int pageNumber,
+            @RequestParam(value = "pagesize", defaultValue = "20") int pageSize
+    ) {
         //контроль входных параметров (требований нет, поэтому проверка чисто на адекватность)
-        if (pageNumber<0) pageNumber = 0;
-        if (pageSize<4) pageSize = 4;
+        if (pageNumber < 0) pageNumber = 0;
+        if (pageSize < 4) pageSize = 4;
 
         //запуск БЛ
         return libraryService.getBooksByPage(pageNumber, pageSize);
@@ -64,7 +61,7 @@ public class LibraryApiController {
     public @ResponseBody
     ResponseEntity<BookInfoView> getBookInfoView(
             @PathVariable(value = "id") Long id
-    ){
+    ) {
         var book = libraryService.getBookInfoView(id);
         if (book.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -77,15 +74,15 @@ public class LibraryApiController {
     public @ResponseBody
     ResponseEntity<Page<BookInfoView>> findBooksByName(
             @PathVariable(value = "name") String name,
-            @RequestParam(value = "pagenumber", defaultValue = "0") Integer pageNumber,
-            @RequestParam(value = "pagesize", defaultValue = "20") Integer pageSize
-    ){
+            @RequestParam(value = "pagenumber", defaultValue = "0") int pageNumber,
+            @RequestParam(value = "pagesize", defaultValue = "20") int pageSize
+    ) {
         //контроль входных параметров (требований нет, поэтому проверка чисто на адекватность)
         if (name == null || name.isBlank()) {
             return ResponseEntity.ok().build();
         }
-        if (pageNumber<0) pageNumber = 0;
-        if (pageSize<4) pageSize = 4;
+        if (pageNumber < 0) pageNumber = 0;
+        if (pageSize < 4) pageSize = 4;
 
         //запуск БЛ
         return ResponseEntity.ok().body(libraryService.findBooksByName(name, pageNumber, pageSize));
@@ -95,15 +92,15 @@ public class LibraryApiController {
     public @ResponseBody
     ResponseEntity<Page<BookInfoView>> findBooksByAuthorName(
             @PathVariable(value = "name") String name,
-            @RequestParam(value = "pagenumber", defaultValue = "0") Integer pageNumber,
-            @RequestParam(value = "pagesize", defaultValue = "20") Integer pageSize
-    ){
+            @RequestParam(value = "pagenumber", defaultValue = "0") int pageNumber,
+            @RequestParam(value = "pagesize", defaultValue = "20") int pageSize
+    ) {
         //контроль входных параметров (требований нет, поэтому проверка чисто на адекватность)
         if (name == null || name.isBlank()) {
             return ResponseEntity.ok().build();
         }
-        if (pageNumber<0) pageNumber = 0;
-        if (pageSize<4) pageSize = 4;
+        if (pageNumber < 0) pageNumber = 0;
+        if (pageSize < 4) pageSize = 4;
 
         //запуск БЛ
         return ResponseEntity.ok().body(libraryService.findBooksByAuthorName(name, pageNumber, pageSize));
@@ -113,31 +110,33 @@ public class LibraryApiController {
     public @ResponseBody
     ResponseEntity<Page<BookInfoView>> findBooksByGenre(
             @PathVariable(value = "genre") String genre,
-            @RequestParam(value = "pagenumber", defaultValue = "0") Integer pageNumber,
-            @RequestParam(value = "pagesize", defaultValue = "20") Integer pageSize
-    ){
+            @RequestParam(value = "pagenumber", defaultValue = "0") int pageNumber,
+            @RequestParam(value = "pagesize", defaultValue = "20") int pageSize
+    ) {
         //контроль входных параметров (требований нет, поэтому проверка чисто на адекватность)
         if (genre == null || genre.isBlank()) {
             return ResponseEntity.ok().build();
         }
-        if (pageNumber<0) pageNumber = 0;
-        if (pageSize<4) pageSize = 4;
+        if (pageNumber < 0) pageNumber = 0;
+        if (pageSize < 4) pageSize = 4;
 
         //запуск БЛ
         return ResponseEntity.ok().body(libraryService.findBooksByGenre(genre, pageNumber, pageSize));
     }
 
     @PostMapping(value = "/books")
-    public ResponseEntity<?> addBook(@RequestBody Book book){
-       if (book.getId() == null) {book.setId(0L);}
-       book.getAuthors().forEach(author -> {
-           if (author.getId()==null) {
-               author.setId(0L);
-           }
-       });
+    public ResponseEntity<?> addBook(@RequestBody Book book) {
+        if (book.getId() == null) {
+            book.setId(0L);
+        }
+        book.getAuthors().forEach(author -> {
+            if (author.getId() == null) {
+                author.setId(0L);
+            }
+        });
 
         book.getGenres().forEach(genre -> {
-            if (genre.getId()==null) {
+            if (genre.getId() == null) {
                 genre.setId(0L);
             }
         });
@@ -147,7 +146,7 @@ public class LibraryApiController {
     }
 
     @PostMapping(value = "/books_and_content",
-    consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> addBookWithContent(
             @RequestPart Book book,
             @RequestPart MultipartFile cover,
@@ -157,17 +156,19 @@ public class LibraryApiController {
         //LoggerFactory.getLogger("LibraryApiController").error(String.format("cover=%s",cover));
         //LoggerFactory.getLogger("LibraryApiController").error(String.format("content=%s",content));
 
-        if (book.getId() == null) {book.setId(0L);}
+        if (book.getId() == null) {
+            book.setId(0L);
+        }
         book.setCover(cover.getBytes());
         book.setContent(content.getBytes());
         book.getAuthors().forEach(author -> {
-            if (author.getId()==null) {
+            if (author.getId() == null) {
                 author.setId(0L);
             }
         });
 
         book.getGenres().forEach(genre -> {
-            if (genre.getId()==null) {
+            if (genre.getId() == null) {
                 genre.setId(0L);
             }
         });
@@ -177,7 +178,7 @@ public class LibraryApiController {
     }
 
     @PutMapping("/books/{id}")
-    public ResponseEntity<?> updateBook(@PathVariable("id")long id, @RequestBody Book book){
+    public ResponseEntity<?> updateBook(@PathVariable("id") long id, @RequestBody Book book) {
         if (libraryService.isExists(id)) {
             libraryService.update(id, book);
             return ResponseEntity.ok().build();
@@ -187,7 +188,7 @@ public class LibraryApiController {
     }
 
     @DeleteMapping("/books/{id}")
-    public ResponseEntity<?> deleteBook(@PathVariable("id") long id){
+    public ResponseEntity<?> deleteBook(@PathVariable("id") long id) {
         if (libraryService.isExists(id)) {
             libraryService.delete(id);
             return ResponseEntity.ok().build();
@@ -197,7 +198,7 @@ public class LibraryApiController {
     }
 
     @GetMapping("/login")
-    public ResponseEntity<String> login(){
+    public ResponseEntity<String> login() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(authentication instanceof AnonymousAuthenticationToken)) {
             String currentUserName = authentication.getName();
@@ -212,7 +213,7 @@ public class LibraryApiController {
     )
     public ResponseEntity<byte[]> getCover(
             @PathVariable(value = "id") Long id
-    ){
+    ) {
         var bookCover = libraryService.getBookCover(id);
         if (bookCover == null) {
             return ResponseEntity.notFound().build();
@@ -233,7 +234,7 @@ public class LibraryApiController {
     public @ResponseBody
     ResponseEntity<byte[]> downloadBookContent(
             @PathVariable(value = "id") Long id
-    ){
+    ) {
         var bookContent = libraryService.getBookContent(id);
         if (bookContent == null) {
             return ResponseEntity.notFound().build();
@@ -255,7 +256,7 @@ public class LibraryApiController {
     public @ResponseBody
     ResponseEntity<byte[]> showBookContent(
             @PathVariable(value = "id") Long id
-    ){
+    ) {
         var bookContent = libraryService.getBookContent(id);
         if (bookContent == null) {
             return ResponseEntity.notFound().build();

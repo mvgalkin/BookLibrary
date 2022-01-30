@@ -3,11 +3,9 @@ package org.mvgalkin.models;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.Set;
 
 @Getter
 @Setter
-@EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
@@ -19,5 +17,4 @@ public class Genre {
     private Long id;
 
     private String name;
-
 }
